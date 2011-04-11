@@ -1,0 +1,25 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Settings">
+        <CheckBoxPreference
+            android:key="silent"
+            android:title="Silent Sending"
+            android:summary="Send links without needing to hit the Send button"
+        />
+        <CheckBoxPreference
+            android:key="advanced"
+            android:title="Advanced Mode"
+            android:summary="Enable settings meant for power users, like custom servers or multiple accounts." />
+    </PreferenceCategory>
+        <PreferenceCategory android:title="Accounts" android:enabled="false" android:key="advancedCategory">
+        <ListPreference android:summary="The Google account to store your data with." android:title="Account" android:key="account" android:entries="@array/accounts" android:entryValues="@array/accounts"></ListPreference>
+        <Preference
+            android:key="addNewAccount"
+            android:title="Add New Account"
+            android:summary="Add a Google account." />
+        <EditTextPreference
+            android:key="deviceName"
+            android:title="Device Name"
+            android:summary="A recognisable name for this device." />
+    </PreferenceCategory>
+</PreferenceScreen>

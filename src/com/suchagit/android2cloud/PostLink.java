@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.ads.*;
+
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import android.app.Activity;
@@ -246,6 +248,14 @@ public class PostLink extends Activity {
     	final EditText device_entry = (EditText) findViewById(R.id.device_entry);
     	if(preferences.getString("device_name", null) != null){
     		device_entry.setText(preferences.getString("device_name", "Chrome"));
+    	}
+    	if(preferences.getBoolean("admob", false)){
+	        AdView adView = (AdView)this.findViewById(R.id.adView);
+	        adView.loadAd(new AdRequest());
+    		adView.setVisibility(View.VISIBLE);
+    	}else{
+    		AdView adView = (AdView)this.findViewById(R.id.adView);
+    		adView.setVisibility(View.GONE);
     	}
 		device_label.setVisibility(View.VISIBLE);
 		device_entry.setVisibility(View.VISIBLE);

@@ -1,50 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.suchagit.android2cloud"
+    xmlns:ads="http://schemas.android.com/apk/res/com.suchagit.android2cloud"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="20px">
-    <TextView
-        android:id="@+id/link_label"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="URL:"/>
-    <EditText
-        android:id="@+id/link_entry"
-        android:inputType="textUri"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/editbox_background"
-        android:layout_below="@id/link_label"/>
-    <TextView
-        android:id="@+id/device_label"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/link_entry"
-        android:text="Device:"/>
-    <EditText
-        android:id="@+id/device_entry"
-        android:inputType="text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/editbox_background"
-        android:layout_below="@id/device_label"/>
-    <Button
-        android:id="@+id/go"
+    android:layout_height="fill_parent">
+    <com.google.ads.AdView android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/device_entry"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
-        android:text="Send" />
-    <TextView
-    	android:id="@+id/description"
-    	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-    	android:text="Enter a URL and a Device (usually 'Chrome') and hit 'Send' to push it to the cloud."
-    	android:layout_below="@id/go"/>
+        ads:adUnitId="a14da651641e538"
+        ads:adSize="BANNER"/>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/adView"
+        android:id="@+id/formLayout"
+        android:padding="20dp">
+	    <TextView
+	        android:id="@+id/link_label"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="URL:"/>
+	    <EditText
+	        android:id="@+id/link_entry"
+	        android:inputType="textUri"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@android:drawable/editbox_background"
+	        android:layout_below="@id/link_label"/>
+	    <TextView
+	        android:id="@+id/device_label"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/link_entry"
+	        android:text="Device:"/>
+	    <EditText
+	        android:id="@+id/device_entry"
+	        android:inputType="text"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@android:drawable/editbox_background"
+	        android:layout_below="@id/device_label"/>
+	    <Button
+	        android:id="@+id/go"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/device_entry"
+	        android:layout_alignParentRight="true"
+	        android:layout_marginLeft="10dip"
+	        android:text="Send"/>
+	</RelativeLayout>
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Enter a URL and a Device (usually 'Chrome') and hit 'Send' to push it to the cloud."
+            android:layout_below="@id/formLayout"/>
     <TextView
         android:id="@+id/account_label"
         android:layout_width="fill_parent"

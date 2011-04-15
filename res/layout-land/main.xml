@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.suchagit.android2cloud"
+    xmlns:ads="http://schemas.android.com/apk/res/com.suchagit.android2cloud"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="20px">
+    android:layout_height="fill_parent">
     <TextView
         android:id="@+id/link_label"
         android:layout_width="fill_parent"
@@ -55,4 +56,11 @@
         android:paddingTop="5dp"
         android:text="Account: None set! Set one to be able to send links."
         android:layout_below="@+id/description"/>
+    <com.google.ads.AdView android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/description"
+        ads:adUnitId="a14da651641e538"
+        ads:adSize="BANNER"/>
 </RelativeLayout>

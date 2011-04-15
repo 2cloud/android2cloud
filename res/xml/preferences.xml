@@ -7,6 +7,10 @@
             android:summary="Send links without needing to hit the Send button"
         />
         <CheckBoxPreference
+            android:key="admob"
+            android:title="Display Ads"
+            android:summary="Help support our server costs and development on the project by enabling ads." />
+        <CheckBoxPreference
             android:key="advanced"
             android:title="Advanced Mode"
             android:summary="Enable settings meant for power users, like custom servers or multiple accounts." />

@@ -36,7 +36,7 @@ public class Preferences extends PreferenceActivity implements OnPreferenceChang
     			if(getIntent().getStringExtra("addAccount") != null){
 		            String intentAction = getIntent().getStringExtra("addAccount");
 		            if(intentAction.equals("true")){
-		            	Intent i = new Intent(Preferences.this, AccountAdd.class);
+		            	Intent i = new Intent(Preferences.this, OAuthActivity.class);
 		            	startActivityForResult(i, ACCOUNT_LIST_REQ_CODE);
 		            }
     			}
@@ -46,7 +46,7 @@ public class Preferences extends PreferenceActivity implements OnPreferenceChang
             addNewAccount.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
                                     public boolean onPreferenceClick(Preference preference) {
-	                    	    			Intent i = new Intent(Preferences.this, AccountAdd.class);
+	                    	    			Intent i = new Intent(Preferences.this, OAuthActivity.class);
 	                    	    			startActivityForResult(i, ACCOUNT_LIST_REQ_CODE);
                                             return true;
                                     }
@@ -54,7 +54,6 @@ public class Preferences extends PreferenceActivity implements OnPreferenceChang
                             });
     }
     
-    @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
     	/*if(preference.getKey().equals("account") || preference.getKey().equals("host")){
     		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

@@ -1,68 +1,45 @@
 package com.suchagit.android2cloud;
 
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.BasicResponseHandler;
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
+import android.util.Log;
+import com.suchagit.android2cloud.util.AddLinkRequest;
 import com.suchagit.android2cloud.util.HttpClient;
 
-import android.app.Service;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Binder;
-import android.os.Handler;
-import android.os.IBinder;
-import android.widget.Toast;
 
-
-public class HttpService extends Service {
+public class HttpService extends IntentService {
 	
-	final Handler mHandler = new Handler();
-	
-	final Runnable mUpdateResults = new Runnable() {
-		public void run() {
-			updateResults();
-		}
-	};
-	
-	public void updateResults() {
-	}
-	
-	protected void makeHttpRequest() {
-		Thread t = new Thread() {
-			public void run() {
-				
-			}
-		};
-		t.start();
-	}
-	
-	private final IBinder mBinder = new HttpServiceBinder();
-	private String response = "";
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
-	
-	public class HttpServiceBinder extends Binder {
-		HttpService getService() {
-			return HttpService.this;
-		}
+	public HttpService() {
+		super("HttpService");
 	}
 	
 	private HttpClient client;
-	
+
 	@Override
-	public void onCreate() {
-	}
-	
-	public void doRequest(SharedPreferences preferences, HttpRequestBase request) {
+	protected void onHandleIntent(Intent intent) {
 		if(client == null) {
-			client = new HttpClient(preferences);
+			String oauth_token = intent.getStringExtra("oauth_token");
+			String oauth_secret = intent.getStringExtra("oauth_secret");
+			client = new HttpClient(oauth_token, oauth_secret);
 		}
-		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-		response = client.exec(request, responseHandler);
-		Toast.makeText(this, response, Toast.LENGTH_LONG).show();
+		Log.d("HttpService", "Making request");
+		String requestType = intent.getAction();
+		String host = intent.getStringExtra("host");
+		final ResultReceiver result = intent.getParcelableExtra("result_receiver");
+		HttpRequestBase request = null;
+		if(requestType.equals("AddLink")) {
+			String link = intent.getStringExtra("link");
+			String receiver = intent.getStringExtra("receiver");
+			String sender = intent.getStringExtra("sender");
+			request = new AddLinkRequest(host, receiver, sender, link);
+		}
+		Bundle b = new Bundle();
+		String response = client.exec(request);
+		b.putString("raw_result", response);
+		result.send(HttpClient.STATUS_OK, b);
 	}
 }

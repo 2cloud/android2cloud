@@ -9,14 +9,15 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 public class HttpClient extends DefaultHttpClient {
+	
+	public static final int STATUS_OK = 200;
 	
 	protected static final String CONSUMER_KEY = "anonymous";
 	protected static final String CONSUMER_SECRET = "anonymous";
@@ -49,10 +50,8 @@ public class HttpClient extends DefaultHttpClient {
 		return this.consumer;
 	}
 	
-	public HttpClient(SharedPreferences preferences) {
+	public HttpClient(String oauth_token, String oauth_secret) {
 		super();
-		String oauth_token = preferences.getString("oauth_token", "error");
-		String oauth_secret = preferences.getString("oauth_secret", "error");
 		if(!oauth_token.equals("error")) {
 			this.setOAuthToken(oauth_token);
 		} else {
@@ -85,12 +84,12 @@ public class HttpClient extends DefaultHttpClient {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public String exec(HttpRequestBase request, ResponseHandler responseHandler) {
-		this.sign(request);
+	public String exec(HttpRequestBase request) {
+		//this.sign(request);
 		String returnString = "";
+		Log.d("HttpClient", "Sending request");
 		try {
-			String response = super.execute(request, responseHandler);
+			String response = super.execute(request, new BasicResponseHandler());
 			returnString = response;
 		} catch(ClientProtocolException e) {
 			//TODO: Handle error

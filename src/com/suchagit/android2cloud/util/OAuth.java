@@ -19,13 +19,26 @@ public class OAuth {
 	private static final String AUTHORISE_TOKEN_URL = "_ah/OAuthAuthorizeToken?btmpl=mobile";
 	private static final String CALLBACK_URL = "http://2cloud.app/oauth/callback/";
 	
-	public static String getRequestUrl(String host){
+	
+	public static OAuthConsumer makeConsumer() {
+		return new CommonsHttpOAuthConsumer(HttpClient.CONSUMER_KEY, HttpClient.CONSUMER_SECRET);
+	}
+	
+	public static OAuthProvider makeProvider(String host) {
 		String request_token_url = host + REQUEST_TOKEN_URL;
 		String access_token_url = host + ACCESS_TOKEN_URL;
 		String authorise_token_url = host + AUTHORISE_TOKEN_URL;
-		consumer = new CommonsHttpOAuthConsumer(HttpClient.CONSUMER_KEY, HttpClient.CONSUMER_SECRET);
-        provider = new CommonsHttpOAuthProvider(request_token_url, access_token_url, authorise_token_url);
-        
+        return new CommonsHttpOAuthProvider(request_token_url, access_token_url, authorise_token_url);
+	}
+	
+	public static String getRequestUrl(String host){
+		if(consumer == null) {
+			consumer = makeConsumer();
+		}
+		
+		if(provider == null) {
+			provider = makeProvider(host);
+		}
         String target = null;
         try {
 			target = provider.retrieveRequestToken(consumer, CALLBACK_URL);
@@ -39,5 +52,31 @@ public class OAuth {
 			target = "OAuthCommunicationException";
 		}
 		return target;
+	}
+	
+	public static OAuthConsumer getAccessToken(String host, String verifier) {
+		try {
+			if(provider == null) {
+		        provider = makeProvider(host);
+			}
+			
+			if(consumer == null) {
+				consumer = makeConsumer();
+			}
+			provider.retrieveAccessToken(consumer, verifier);
+		} catch (OAuthMessageSignerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OAuthNotAuthorizedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OAuthExpectationFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OAuthCommunicationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return consumer;
 	}
 }

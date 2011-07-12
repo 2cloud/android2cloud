@@ -40,6 +40,6 @@ public class HttpService extends IntentService {
 		Bundle b = new Bundle();
 		String response = client.exec(request);
 		b.putString("raw_result", response);
-		result.send(HttpClient.STATUS_OK, b);
+		result.send(HttpClient.STATUS_COMPLETE, b);
 	}
 }

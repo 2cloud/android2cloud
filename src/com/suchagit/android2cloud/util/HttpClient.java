@@ -17,7 +17,9 @@ import android.util.Log;
 
 public class HttpClient extends DefaultHttpClient {
 	
-	public static final int STATUS_OK = 200;
+	public static final int STATUS_COMPLETE = 1;
+	public static final int STATUS_RUNNING = 0;
+	public static final int STATUS_ERROR = -1;
 	
 	protected static final String CONSUMER_KEY = "anonymous";
 	protected static final String CONSUMER_SECRET = "anonymous";

@@ -37,6 +37,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/editbox_background"
+        android:text="Default"
         android:layout_below="@id/account_label"/>
     <TextView
         android:id="@+id/host_label"
@@ -50,9 +51,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/editbox_background"
+        android:text="https://2cloudapp.appspot.com/"
         android:layout_below="@id/host_label"/>
     <Button
-        android:id="@+id/advanced_go"
+        android:id="@+id/add_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/host_entry"
@@ -64,8 +66,8 @@
     	android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/advanced_go"
-        android:layout_alignTop="@id/advanced_go"
+        android:layout_toLeftOf="@id/add_account"
+        android:layout_alignTop="@id/add_account"
         android:text="Cancel" />
     <Button
     	android:id="@+id/help"

@@ -13,7 +13,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.util.Log;
 
 public class HttpClient extends DefaultHttpClient {
 	
@@ -57,12 +56,12 @@ public class HttpClient extends DefaultHttpClient {
 		if(!oauth_token.equals("error")) {
 			this.setOAuthToken(oauth_token);
 		} else {
-			Log.e("HttpClient", "OAuthToken not set");
+			//TODO: find some way of erroring
 		}
 		if(!oauth_secret.equals("error")) {
 			this.setOAuthSecret(oauth_secret);
 		} else {
-			Log.e("HttpClient", "OAuthSecret not set");
+			//TODO: find some way of erroring
 		}
 		this.setConsumer(initConsumer());
 	}
@@ -87,9 +86,8 @@ public class HttpClient extends DefaultHttpClient {
 	}
 	
 	public String exec(HttpRequestBase request) {
-		//this.sign(request);
+		this.sign(request);
 		String returnString = "";
-		Log.d("HttpClient", "Sending request");
 		try {
 			String response = super.execute(request, new BasicResponseHandler());
 			returnString = response;

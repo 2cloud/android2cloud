@@ -8,6 +8,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import android.net.Uri;
 
 public class OAuth {
 	
@@ -17,7 +18,9 @@ public class OAuth {
 	private static final String REQUEST_TOKEN_URL = "_ah/OAuthGetRequestToken";
 	private static final String ACCESS_TOKEN_URL = "_ah/OAuthGetAccessToken";
 	private static final String AUTHORISE_TOKEN_URL = "_ah/OAuthAuthorizeToken?btmpl=mobile";
-	private static final String CALLBACK_URL = "http://2cloud.app/oauth/callback/";
+	
+	public static final String CALLBACK_PATH = "/oauth/callback/";
+	private static final String CALLBACK_URL = "http://2cloud.app" + CALLBACK_PATH;
 	
 	
 	public static OAuthConsumer makeConsumer() {
@@ -31,7 +34,7 @@ public class OAuth {
         return new CommonsHttpOAuthProvider(request_token_url, access_token_url, authorise_token_url);
 	}
 	
-	public static String getRequestUrl(String host){
+	public static String getRequestUrl(String host, String account){
 		if(consumer == null) {
 			consumer = makeConsumer();
 		}
@@ -41,7 +44,9 @@ public class OAuth {
 		}
         String target = null;
         try {
-			target = provider.retrieveRequestToken(consumer, CALLBACK_URL);
+        	host = Uri.encode(host);
+        	account = Uri.encode(account);
+			target = provider.retrieveRequestToken(consumer, CALLBACK_URL+"?host="+host+"&account="+account);
 		} catch (OAuthMessageSignerException e) {
 			target = "OAuthMessageSignerException";
 		} catch (OAuthNotAuthorizedException e) {

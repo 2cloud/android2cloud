@@ -6,7 +6,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
 import com.suchagit.android2cloud.util.AddLinkRequest;
 import com.suchagit.android2cloud.util.HttpClient;
 
@@ -26,7 +25,6 @@ public class HttpService extends IntentService {
 			String oauth_secret = intent.getStringExtra("oauth_secret");
 			client = new HttpClient(oauth_token, oauth_secret);
 		}
-		Log.d("HttpService", "Making request");
 		String requestType = intent.getAction();
 		String host = intent.getStringExtra("host");
 		final ResultReceiver result = intent.getParcelableExtra("result_receiver");

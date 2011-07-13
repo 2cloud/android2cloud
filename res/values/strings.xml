@@ -1,5 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World!</string>
-    <string name="app_name">android2cloud</string>
+<string name="app_name">2cloud</string>
+<string name="edit_settings">Preferences</string>
+<string-array name="edit_settings_array_keys">
+<item>Account</item>
+<item>Silent Sending</item>
+</string-array>
+<string-array name="edit_settings_array_values">
+<item>add_account</item>
+<item>silent_sending</item>
+</string-array>
+<string-array name="edit_settings_array_descriptions">
+<item>Change the account that you\'re using to send links.</item>
+<item>Send links straight from your apps, without having to click Send in 2cloud.</item>
+</string-array>
 </resources>

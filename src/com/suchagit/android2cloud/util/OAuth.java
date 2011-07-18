@@ -1,5 +1,8 @@
 package com.suchagit.android2cloud.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -9,6 +12,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import android.net.Uri;
+import android.util.Log;
 
 public class OAuth {
 	
@@ -19,8 +23,8 @@ public class OAuth {
 	private static final String ACCESS_TOKEN_URL = "_ah/OAuthGetAccessToken";
 	private static final String AUTHORISE_TOKEN_URL = "_ah/OAuthAuthorizeToken?btmpl=mobile";
 	
-	public static final String CALLBACK_PATH = "/oauth/callback/";
-	private static final String CALLBACK_URL = "http://2cloud.app" + CALLBACK_PATH;
+	public static final String CALLBACK_PATH = "oauth/callback/";
+	private static final String CALLBACK_PROTOCOL = "2cloud";
 	
 	
 	public static OAuthConsumer makeConsumer() {
@@ -44,17 +48,17 @@ public class OAuth {
 		}
         String target = null;
         try {
-        	host = Uri.encode(host);
         	account = Uri.encode(account);
-			target = provider.retrieveRequestToken(consumer, CALLBACK_URL+"?host="+host+"&account="+account);
+        	Log.d("OAuth", CALLBACK_PROTOCOL+CALLBACK_PATH+"?account=" + account);
+			target = provider.retrieveRequestToken(consumer, host+CALLBACK_PATH+"?protocol="+CALLBACK_PROTOCOL+"&account="+account);
 		} catch (OAuthMessageSignerException e) {
-			target = "OAuthMessageSignerException";
+			target = "OAuthMessageSignerException: "+e.getMessage();
 		} catch (OAuthNotAuthorizedException e) {
 			target = "OAuthNotAuthorizedException";
 		} catch (OAuthExpectationFailedException e) {
 			target = "OAuthExpectationFailedException";
 		} catch (OAuthCommunicationException e) {
-			target = "OAuthCommunicationException";
+			target = "OAuthCommunicationException"+e.getMessage();
 		}
 		return target;
 	}

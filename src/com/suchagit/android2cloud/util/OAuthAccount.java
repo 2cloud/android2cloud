@@ -81,7 +81,11 @@ public class OAuthAccount {
 		if(accountString.charAt(0) == '|') {
 			chopStart++;
 		}
-		accountString = accountString.substring(chopStart, chopEnd);
+		if(chopEnd <= chopStart) {
+			accountString = "";
+		} else {
+			accountString = accountString.substring(chopStart, chopEnd);
+		}
 		return accountString.split("\\|");
 	}
 }

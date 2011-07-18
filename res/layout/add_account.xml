@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="20px">
+    android:padding="20dp">
     <TextView
     	android:id="@+id/advanced_description"
     	android:layout_width="fill_parent"
@@ -14,7 +14,7 @@
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:padding="20dp"
-    	android:textSize="18px"
+    	android:textSize="18sp"
     	android:text="android2cloud uses your Google account to authenticate you. This is done via OAuth, and at no time does the application have access to your password. Click the connect button below, and it will open the Google OAuth page. Just enter your username and password, and it will send you back to the application."
     	android:visibility="gone"/>
     <Button
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/basic_description"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dip"
+        android:layout_marginTop="20dp"
         android:text="Connect"
         android:visibility="gone"/>
     <TextView
@@ -59,8 +59,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/host_entry"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
-        android:layout_marginTop="20dip"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
         android:text="Connect" />
     <Button
     	android:id="@+id/cancel"

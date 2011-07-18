@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 public class AddLinkResponse extends ResultReceiver {
     private Receiver mReceiver;
@@ -35,6 +36,8 @@ public class AddLinkResponse extends ResultReceiver {
 				} catch (JSONException e) {
 					newData.putInt("response_code", 500);
 					newData.putString("type", "client_error");
+					Log.d("AddLinkResponse", resultData.getString("raw_result"));
+					Log.d("AddLinkResponse", e.getMessage());
 				}
         	}
     		mReceiver.onReceiveResult(resultCode, newData);

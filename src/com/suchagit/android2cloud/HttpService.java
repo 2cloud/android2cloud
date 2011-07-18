@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import com.suchagit.android2cloud.util.AddLinkRequest;
 import com.suchagit.android2cloud.util.HttpClient;
+import com.suchagit.android2cloud.util.PaymentNotificationRequest;
 
 
 public class HttpService extends IntentService {
@@ -34,6 +35,10 @@ public class HttpService extends IntentService {
 			String receiver = intent.getStringExtra("receiver");
 			String sender = intent.getStringExtra("sender");
 			request = new AddLinkRequest(host, receiver, sender, link);
+		} else if (requestType.equals("PaymentNotification")) {
+			String itemId = intent.getStringExtra("item_id");
+			String orderNumber = intent.getStringExtra("order_number");
+			request = new PaymentNotificationRequest(host, orderNumber, itemId);
 		}
 		Bundle b = new Bundle();
 		String response = client.exec(request);

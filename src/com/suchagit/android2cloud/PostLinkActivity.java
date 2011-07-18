@@ -13,12 +13,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,18 +30,24 @@ import com.suchagit.android2cloud.util.OAuthAccount;
 
 public class PostLinkActivity extends Activity implements AddLinkResponse.Receiver {
 	
+	private static final int BILLING_INTENT_CODE = 0x1079;
+
 	public AddLinkResponse mReceiver;
     
 	private OAuthAccount account;
 	private SharedPreferences settings;
 	private SharedPreferences accounts_preferences;
+	
 	private EditText device_entry;
 	private EditText url_input;
 	private TextView account_display;
+	private ProgressBar throbber;
+	private Button send_button;
 	
 	private String link = "";
 	private String receiver = "";
 	private boolean popup = false;
+	private boolean contentSet = false;
 	
 	private final int EDIT_SETTINGS_REQ_CODE = 0x1234;
 	
@@ -52,20 +60,37 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		receiver = settings.getString("receiver", "Chrome");
     	
 		if(!settings.getBoolean("silent", false)) {
-	    	setContentView(R.layout.main);
-	    	final Button send = (Button) findViewById(R.id.send);
+			if(!contentSet) {
+				setContentView(R.layout.main);
+				contentSet = true;
+			}
+	    	send_button = (Button) findViewById(R.id.send);
 	    	device_entry = (EditText) findViewById(R.id.device_entry);
 	    	url_input = (EditText) findViewById(R.id.link_entry);
 	    	account_display = (TextView) findViewById(R.id.account_label);
+	    	throbber = (ProgressBar) findViewById(R.id.sendLinkThrobber);
 	    	
-	    	url_input.setText(link);
-	    	device_entry.setText(receiver);
 	    	
-	    	send.setOnClickListener(new View.OnClickListener() {
+	    	send_button.setOnClickListener(new View.OnClickListener() {
 	        	public void onClick(View v) {
 	        		link = url_input.getText().toString();
-	        		receiver = device_entry.getText().toString();
-	        		sendLink();
+	        		if(link == null || link.trim().equals("")) {
+	        			popup = true;
+	    	        	AlertDialog.Builder builder = new AlertDialog.Builder(PostLinkActivity.this);
+	    	        	builder.setMessage("Please enter a link.")
+	    	        		.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+	    	        			public void onClick(DialogInterface dialog, int id) {
+	    	        				dialog.cancel();
+	    	        			}
+	    	        		});
+	    	        	AlertDialog alert = builder.create();
+	    	        	alert.show();
+	        		} else {
+	        			receiver = device_entry.getText().toString();
+	        			send_button.setVisibility(View.GONE);
+	        			throbber.setVisibility(View.VISIBLE);
+	        			sendLink();
+	        		}
 	        	}
 	        });
 		}
@@ -79,14 +104,15 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		accounts_preferences = getSharedPreferences("android2cloud-accounts", 0);
 		
-		String account_name = settings.getString("account", "error");
-		if(account_name.equals("error")) {
-			String[] accounts = OAuthAccount.getAccounts(accounts_preferences);
-			if(accounts.length == 1){
+		String account_name = settings.getString("account", "");
+		account = new OAuthAccount(account_name, accounts_preferences);
+		String[] accounts = OAuthAccount.getAccounts(accounts_preferences);
+		if(account_name.equals("") || accounts.length == 0) {
+			if(accounts.length == 1 && !account_name.equals("")){
 				SharedPreferences.Editor settings_editor = settings.edit();
 				settings_editor.putString("account", accounts[0]);
 				settings_editor.commit();
-			} else {
+			} else if(accounts.length == 1 && accounts[0].equals("")){
 				popup = true;
 	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	        	builder.setMessage("You don't appear to have an account setup. You need to set one up before you can use the app.")
@@ -99,22 +125,39 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 	        		});
 	        	AlertDialog alert = builder.create();
 	        	alert.show();
+			} else {
+				popup = true;
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage("I'm not sure what account you want to use. Please select one.")
+				.setCancelable(false)
+				.setPositiveButton("Select Account", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Intent i = new Intent(PostLinkActivity.this, Preferences.class);
+						startActivity(i);
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
 			}
 		}
 		
 		if(Intent.ACTION_SEND.equals(getIntent().getAction())) {
 			link = getIntent().getExtras().getString(Intent.EXTRA_TEXT);
+			Log.d("PostLinkActivity", link);
         	String regex = "\\b(\\w+)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
             Pattern patt = Pattern.compile(regex);
             Matcher matcher = patt.matcher(link);
             ArrayList<String> matches = new ArrayList<String>();
             while(matcher.find()){
             	matches.add(matcher.group());
+    			Log.d("PostLinkActivity", matcher.group());
             }
             final CharSequence[] matches_cs = matches.toArray(new CharSequence[matches.size()]);
             if(matches.size() > 1) {
             	popup = true;
-    	    	setContentView(R.layout.main);
+            	if(!contentSet) {
+            		setContentView(R.layout.main);
+            	}
     	    	url_input = (EditText) findViewById(R.id.link_entry);
             	AlertDialog.Builder builder = new AlertDialog.Builder(this);
             	builder.setTitle("Choose a link to share:");
@@ -122,8 +165,10 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
             	    public void onClick(DialogInterface dialog, int item) {
             	        link = (String) matches_cs[item];
             	        url_input.setText(link);
-            	        sendLink();
-            	        finish();
+            	        if(settings.getBoolean("silent", false)) {
+            	        	sendLink();
+            	        	finish();
+            	        }
             	    }
             	});
             	AlertDialog alert = builder.create();
@@ -132,17 +177,23 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
             	link = (String) matches_cs[0];
             }
 		}
-		
-		account = new OAuthAccount(settings.getString("account", "error"), accounts_preferences);
     	
 		mReceiver = new AddLinkResponse(new Handler());
 		mReceiver.setReceiver(this);
-		if(settings.getBoolean("silent", false)) {
-			if(link.trim() != "" && popup == false) {
-				sendLink();
-				finish();
-			}
+		if(settings.getBoolean("silent", false) && popup == false && link.trim() != "") {
+			sendLink();
+			finish();
 		} else {
+			if(!contentSet) {
+				setContentView(R.layout.main);
+			}
+	    	send_button = (Button) findViewById(R.id.send);
+	    	device_entry = (EditText) findViewById(R.id.device_entry);
+	    	url_input = (EditText) findViewById(R.id.link_entry);
+	    	account_display = (TextView) findViewById(R.id.account_label);
+	    	throbber = (ProgressBar) findViewById(R.id.sendLinkThrobber);
+	    	url_input.setText(link);
+	    	device_entry.setText(receiver);
 	    	account_display.setText("Account: "+account.getAccount());
 		}
 	}
@@ -150,6 +201,7 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 	public void onPause() {
 		super.onPause();
 		mReceiver.setReceiver(null);
+		contentSet = false;
 	}
 	
     @Override
@@ -173,6 +225,8 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
     }
 
 	public void onReceiveResult(int resultCode, Bundle resultData) {
+		throbber.setVisibility(View.GONE);
+		send_button.setVisibility(View.VISIBLE);
 		switch (resultCode) {
 		case HttpClient.STATUS_COMPLETE:
 			int code = resultData.getInt("response_code");
@@ -190,16 +244,15 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 				Toast.makeText(this, resp, Toast.LENGTH_LONG).show();
 			} else if(code == 503) {
 				resp = "The server is over quota. Your link ";
-				resp += resultData.getString("link");
-				resp += " was stored and will be sent to Chrome tomorrow. ";
+				resp += "was stored and will be sent to Chrome tomorrow. ";
 				resp += "Alternatively, you can pay $1 to get around the quota ";
 				resp += "for the rest of the day.";
 	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	        	builder.setMessage(resp)
 	        		.setPositiveButton("Pay $1", new DialogInterface.OnClickListener() {
 	        			public void onClick(DialogInterface dialog, int id) {
-	    	    			Intent i = new Intent(PostLinkActivity.this, OAuthActivity.class);
-	    	    			startActivity(i); 
+	    	    			Intent i = new Intent(PostLinkActivity.this, Billing.class);
+	    	    			startActivityForResult(i, BILLING_INTENT_CODE); 
 	        			}
 	        		})
 	        		.setNegativeButton("Wait Until Tomorrow", new DialogInterface.OnClickListener() {
@@ -229,5 +282,8 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		intent.putExtra("receiver", receiver);
 		intent.putExtra("sender", "Android");
 		startService(intent);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("receiver", receiver);
+		editor.commit();
 	}
 }

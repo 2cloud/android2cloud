@@ -34,7 +34,7 @@ public class OAuth {
         return new CommonsHttpOAuthProvider(request_token_url, access_token_url, authorise_token_url);
 	}
 	
-	public static String getRequestUrl(String host, String account){
+	public static String getRequestUrl(String host, String account) throws OAuthMessageSignerException, OAuthNotAuthorizedException, OAuthExpectationFailedException, OAuthCommunicationException {
 		if(consumer == null) {
 			consumer = makeConsumer();
 		}
@@ -42,46 +42,21 @@ public class OAuth {
 		if(provider == null) {
 			provider = makeProvider(host);
 		}
-        String target = null;
-        try {
-        	account = Uri.encode(account);
-        	Uri host_uri = Uri.parse(host);
-			target = provider.retrieveRequestToken(consumer, "http://" + CALLBACK_DOMAIN+"/?account="+account+"&protocol="+host_uri.getScheme()+"&domain="+host_uri.getHost());
-		} catch (OAuthMessageSignerException e) {
-			target = "OAuthMessageSignerException: "+e.getMessage();
-		} catch (OAuthNotAuthorizedException e) {
-			target = "OAuthNotAuthorizedException";
-		} catch (OAuthExpectationFailedException e) {
-			target = "OAuthExpectationFailedException";
-		} catch (OAuthCommunicationException e) {
-			target = "OAuthCommunicationException"+e.getMessage();
-		}
+    	account = Uri.encode(account);
+    	Uri host_uri = Uri.parse(host);
+		String target = provider.retrieveRequestToken(consumer, "http://" + CALLBACK_DOMAIN+"/?account="+account+"&protocol="+host_uri.getScheme()+"&domain="+host_uri.getHost());
 		return target;
 	}
 	
-	public static OAuthConsumer getAccessToken(String host, String verifier) {
-		try {
-			if(provider == null) {
-		        provider = makeProvider(host);
-			}
-			
-			if(consumer == null) {
-				consumer = makeConsumer();
-			}
-			provider.retrieveAccessToken(consumer, verifier);
-		} catch (OAuthMessageSignerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OAuthNotAuthorizedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OAuthExpectationFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OAuthCommunicationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public static OAuthConsumer getAccessToken(String host, String verifier) throws OAuthMessageSignerException, OAuthNotAuthorizedException, OAuthExpectationFailedException, OAuthCommunicationException {
+		if(provider == null) {
+	        provider = makeProvider(host);
 		}
+		
+		if(consumer == null) {
+			consumer = makeConsumer();
+		}
+		provider.retrieveAccessToken(consumer, verifier);
 		return consumer;
 	}
 }

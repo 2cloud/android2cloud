@@ -25,4 +25,29 @@
 		Your version of Market may be out of date.
 		You can continue to use this app but you
 		won\'t be able to make purchases.</string>
+	<string name="default_error_message">An unexpected error has occurred.</string>
+	<string name="default_error_ok">OK</string>
+	<string name="report_error_button">Report Error</string>
+	<string name="oauthactivity_null_uri_error">There was a problem retrieving the authentication results. Please try again.</string>
+	<string name="postlink_null_link_error">You need to enter a link to send.</string>
+	<string name="postlink_null_receiver_error">You need to specify a device to send the link to. If in doubt, try &quot;Chrome&quot;.</string>
+	<string name="no_accounts_error">There are no accounts set up. Please set one up before sending links.</string>
+	<string name="no_account_selected_error">You have accounts set up, but none is selected. Please select one before sending links.</string>
+	<string name="intent_without_link_error">You\'re trying to send something that has no link.</string>
+	<string name="http_client_error">There was an error communicating with the server. Please try again.</string>
+	<string name="postlink_auth_error">There was an error authenticating you. Please check your account and try again.</string>
+	<string name="over_quota_error">The server is over quota. Your link has been stored, and will be opened tomorrow. If you wish, you may pay to get around the quota for the rest of the day.</string>
+	<string name="oauth_message_signer_exception_error">There was a problem signing your request. Please try again.</string>
+	<string name="oauth_not_authorized_exception_error">There was a problem authenticating you. Please try again.</string>
+	<string name="oauth_expectation_failed_exception_error">There was a problem signing your request. Please try again.</string>
+	<string name="oauth_communication_exception_error">There was a problem communicating with the server. Please check your connection and try again.</string>
+	<string name="unsupported_encoding_exception_error">There was a problem with your request. Please report this to the development team.</string>
+	<string name="default_error_title">Error!</string>
+	<string name="over_quota_error_title">Over Quota</string>
+	<string name="oauthwebview_null_intent_error">There was an error authenticating your account. Please try again.</string>
+	<string name="postlink_auth_error_account_button">Go To Account Settings</string>
+	<string name="no_accounts_error_account_button">Set One Up Now</string>
+	<string name="no_account_selected_error_account_button">Choose an Account</string>
+	<string name="over_quota_error_pay_button">Pay $1</string>
+	<string name="oauth_communication_exception_error_networking_button">Open Networking Settings</string>
 </resources>

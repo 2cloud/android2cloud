@@ -3,6 +3,8 @@ package com.suchagit.android2cloud;
 import com.suchagit.android2cloud.util.OAuth;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +22,8 @@ public class OAuthWebView extends Activity {
 		String request_url = "";
 		if(this.getIntent() != null && this.getIntent().getDataString() != null){
 			request_url = this.getIntent().getDataString();
+		} else {
+			showDialog(R.string.oauthwebview_null_intent_error);
 		}
 		WebView browser= new WebView(this);
 		setContentView(browser);
@@ -47,5 +51,14 @@ public class OAuthWebView extends Activity {
 			}
 		});
 		browser.loadUrl(request_url);
+	}
+	
+	@Override
+	public Dialog onCreateDialog(int id) {
+		super.onCreateDialog(id);
+		ErrorDialogBuilder error = new ErrorDialogBuilder(OAuthWebView.this, new Bundle());
+		error.build(id);
+		AlertDialog alert = error.create();
+		return alert;
 	}
 }

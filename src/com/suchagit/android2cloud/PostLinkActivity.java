@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,7 +31,7 @@ import com.suchagit.android2cloud.util.OAuthAccount;
 
 public class PostLinkActivity extends Activity implements AddLinkResponse.Receiver {
 	
-	private static final int BILLING_INTENT_CODE = 0x1079;
+	public static final int BILLING_INTENT_CODE = 0x1079;
 
 	public AddLinkResponse mReceiver;
     
@@ -49,7 +50,7 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 	private boolean popup = false;
 	private boolean contentSet = false;
 	
-	private final int EDIT_SETTINGS_REQ_CODE = 0x1234;
+	public final static int EDIT_SETTINGS_REQ_CODE = 0x1234;
 	
 	@Override
 	public void onCreate(Bundle savedInstance) {
@@ -74,19 +75,14 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 	    	send_button.setOnClickListener(new View.OnClickListener() {
 	        	public void onClick(View v) {
 	        		link = url_input.getText().toString();
+        			receiver = device_entry.getText().toString();
 	        		if(link == null || link.trim().equals("")) {
 	        			popup = true;
-	    	        	AlertDialog.Builder builder = new AlertDialog.Builder(PostLinkActivity.this);
-	    	        	builder.setMessage("Please enter a link.")
-	    	        		.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-	    	        			public void onClick(DialogInterface dialog, int id) {
-	    	        				dialog.cancel();
-	    	        			}
-	    	        		});
-	    	        	AlertDialog alert = builder.create();
-	    	        	alert.show();
+	        			showDialog(R.string.postlink_null_link_error);
+	        		} else if(receiver == null || receiver.trim().equals("")) {
+	        			popup = true;
+	        			showDialog(R.string.postlink_null_receiver_error);
 	        		} else {
-	        			receiver = device_entry.getText().toString();
 	        			send_button.setVisibility(View.GONE);
 	        			throbber.setVisibility(View.VISIBLE);
 	        			sendLink();
@@ -114,30 +110,10 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 				settings_editor.commit();
 			} else if(accounts.length == 1 && accounts[0].equals("")){
 				popup = true;
-	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	        	builder.setMessage("You don't appear to have an account setup. You need to set one up before you can use the app.")
-	        		.setCancelable(false)
-	        		.setPositiveButton("Set One Up", new DialogInterface.OnClickListener() {
-	        			public void onClick(DialogInterface dialog, int id) {
-	    	    			Intent i = new Intent(PostLinkActivity.this, OAuthActivity.class);
-	    	    			startActivity(i); 
-	        			}
-	        		});
-	        	AlertDialog alert = builder.create();
-	        	alert.show();
+	        	showDialog(R.string.no_accounts_error);
 			} else {
 				popup = true;
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage("I'm not sure what account you want to use. Please select one.")
-				.setCancelable(false)
-				.setPositiveButton("Select Account", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						Intent i = new Intent(PostLinkActivity.this, Preferences.class);
-						startActivity(i);
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
+				showDialog(R.string.no_account_selected_error);
 			}
 		}
 		
@@ -175,6 +151,8 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
             	alert.show();
             }else if(matches.size() == 1){
             	link = (String) matches_cs[0];
+            } else {
+            	showDialog(R.string.intent_without_link_error);
             }
 		}
     	
@@ -202,6 +180,15 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		super.onPause();
 		mReceiver.setReceiver(null);
 		contentSet = false;
+	}
+	
+	@Override
+	public Dialog onCreateDialog(int id, Bundle data) {
+		super.onCreateDialog(id, data);
+		ErrorDialogBuilder error = new ErrorDialogBuilder(PostLinkActivity.this, data);
+		error.build(id);
+		AlertDialog alert = error.create();
+		return alert;
 	}
 	
     @Override
@@ -236,36 +223,32 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 				Toast.makeText(this, resp, Toast.LENGTH_LONG).show();
 			} else if(code == 500) {
 				if(resultData.getString("type") == "client_error") {
-					resp = "There was an error understanding the result from the server. Please try again.";
-					Toast.makeText(this, resp, Toast.LENGTH_LONG).show();
+    				Bundle error_data = new Bundle();
+    				error_data.putString("account", account.getAccount());
+    				error_data.putString("host", account.getHost());
+    				error_data.putString("token", account.getToken());
+    				error_data.putString("secret", account.getKey());
+    				error_data.putString("raw_data", resultData.getString("raw_result"));
+					showDialog(R.string.http_client_error, error_data);
 				}
 			} else if(code == 401) {
-				resp = "You need to log in before your link will be stored.";
-				Toast.makeText(this, resp, Toast.LENGTH_LONG).show();
+				Bundle error_data = new Bundle();
+				error_data.putString("account", account.getAccount());
+				error_data.putString("host", account.getHost());
+				error_data.putString("token", account.getToken());
+				error_data.putString("secret", account.getKey());
+				showDialog(R.string.postlink_auth_error, error_data);
 			} else if(code == 503) {
-				resp = "The server is over quota. Your link ";
-				resp += "was stored and will be sent to Chrome tomorrow. ";
-				resp += "Alternatively, you can pay $1 to get around the quota ";
-				resp += "for the rest of the day.";
-	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	        	builder.setMessage(resp)
-	        		.setPositiveButton("Pay $1", new DialogInterface.OnClickListener() {
-	        			public void onClick(DialogInterface dialog, int id) {
-	    	    			Intent i = new Intent(PostLinkActivity.this, Billing.class);
-	    	    			startActivityForResult(i, BILLING_INTENT_CODE); 
-	        			}
-	        		})
-	        		.setNegativeButton("Wait Until Tomorrow", new DialogInterface.OnClickListener() {
-	        			public void onClick(DialogInterface dialog, int id) {
-	        				dialog.cancel();
-	        			}
-	        		});
-	        	AlertDialog alert = builder.create();
-	        	alert.show();
+				showDialog(R.string.over_quota_error);
 			}
 			break;
 		case HttpClient.STATUS_ERROR:
-			Toast.makeText(this, "Oops! Error processing your request.", Toast.LENGTH_LONG).show();
+			int error_code = resultData.getInt("response_code");
+			if(error_code == 600) {
+				showDialog(R.string.unsupported_encoding_exception_error);
+			} else {
+				showDialog(R.string.default_error_message);
+			}
 			break;
 		}
 	}

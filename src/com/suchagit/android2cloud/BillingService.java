@@ -141,6 +141,7 @@ public class BillingService extends Service implements ServiceConnection {
          */
         protected void onRemoteException(RemoteException e) {
             Log.w(TAG, "remote billing service crashed");
+            //error: billing_remote_exception_error
             mService = null;
         }
 
@@ -376,6 +377,7 @@ public class BillingService extends Service implements ServiceConnection {
             }
         } catch (SecurityException e) {
             Log.e(TAG, "Security exception: " + e);
+            //error: billing_security_exception_error
         }
         return false;
     }

@@ -1,8 +1,5 @@
 package com.suchagit.android2cloud.util;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;

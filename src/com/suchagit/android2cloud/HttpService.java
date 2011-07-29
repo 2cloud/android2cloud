@@ -1,5 +1,7 @@
 package com.suchagit.android2cloud;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.http.client.methods.HttpRequestBase;
 
 import android.app.IntentService;
@@ -30,19 +32,27 @@ public class HttpService extends IntentService {
 		String host = intent.getStringExtra("host");
 		final ResultReceiver result = intent.getParcelableExtra("result_receiver");
 		HttpRequestBase request = null;
-		if(requestType.equals("AddLink")) {
-			String link = intent.getStringExtra("link");
-			String receiver = intent.getStringExtra("receiver");
-			String sender = intent.getStringExtra("sender");
-			request = new AddLinkRequest(host, receiver, sender, link);
-		} else if (requestType.equals("PaymentNotification")) {
-			String itemId = intent.getStringExtra("item_id");
-			String orderNumber = intent.getStringExtra("order_number");
-			request = new PaymentNotificationRequest(host, orderNumber, itemId);
-		}
 		Bundle b = new Bundle();
-		String response = client.exec(request);
-		b.putString("raw_result", response);
-		result.send(HttpClient.STATUS_COMPLETE, b);
+		try {
+			if(requestType.equals("AddLink")) {
+				String link = intent.getStringExtra("link");
+				String receiver = intent.getStringExtra("receiver");
+				String sender = intent.getStringExtra("sender");
+				request = new AddLinkRequest(host, receiver, sender, link);
+			} else if (requestType.equals("PaymentNotification")) {
+				String itemId = intent.getStringExtra("item_id");
+				String orderNumber = intent.getStringExtra("order_number");
+				request = new PaymentNotificationRequest(host, orderNumber, itemId);
+			}
+			String response = client.exec(request);
+			b.putString("raw_result", response);
+			result.send(HttpClient.STATUS_COMPLETE, b);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			// need to build and return an error object here
+			b.putInt("response_code", 600);
+			b.putString("type", "unsupported_encoding_exception_error");
+			result.send(HttpClient.STATUS_ERROR, b);
+		}
 	}
 }

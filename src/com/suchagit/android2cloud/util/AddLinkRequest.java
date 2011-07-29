@@ -56,7 +56,7 @@ public class AddLinkRequest extends HttpPost {
 		return this.data;
 	}
 	
-	public AddLinkRequest(String host, String receiver, String sender, String link) {
+	public AddLinkRequest(String host, String receiver, String sender, String link) throws UnsupportedEncodingException {
 		super(host+"links/add");
 		this.setReceiver(receiver);
 		this.setSender(sender);
@@ -67,11 +67,7 @@ public class AddLinkRequest extends HttpPost {
 		this.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 		this.addHeader("Content-Type", "application/x-www-form-urlencoded");
 		UrlEncodedFormEntity entity = null;
-		try {
-			entity = new UrlEncodedFormEntity(this.getData(), "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			//TODO: Handle error
-		}
+		entity = new UrlEncodedFormEntity(this.getData(), "UTF-8");
 		this.setEntity(entity);
 	}
 

@@ -39,6 +39,8 @@ public class AddLinkResponse extends ResultReceiver {
 					Log.d("AddLinkResponse", resultData.getString("raw_result"));
 					Log.d("AddLinkResponse", e.getMessage());
 				}
+        	} else if(resultCode == HttpClient.STATUS_ERROR) {
+        		newData = resultData;
         	}
     		mReceiver.onReceiveResult(resultCode, newData);
         }

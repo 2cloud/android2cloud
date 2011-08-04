@@ -55,7 +55,7 @@ is better that way. In our future version, expect to see unit tests with JUnit a
 Checkstyle implemented and required for pull requests.
 
 The best way to figure out what's on our to-do list is to look at the 
-[issue tracker](https://www.github.com/2cloud/AppEngine/issues) or ask on the 
+[issue tracker](https://www.github.com/2cloud/android2cloud/issues) or ask on the 
 [dev mailing list](http://groups.google.com/group/2cloud-dev). Whatever you work 
 on should be something _you_ want to see implemented, though.
 

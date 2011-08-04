@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 
 public class ErrorDialogBuilder extends AlertDialog.Builder {
@@ -87,6 +88,10 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
     			public void onClick(DialogInterface dialog, int id) {
     				String message = "Error:\n";
     				message += "Type: postlink_auth_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
     				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
     				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
     				message += "Token: " + ErrorDialogBuilder.this.data.getString("token") + "\n";
@@ -120,6 +125,10 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
     			public void onClick(DialogInterface dialog, int id) {
     				String message = "Error:\n";
     				message += "Type: http_client_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
     				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
     				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
     				message += "Token: " + ErrorDialogBuilder.this.data.getString("token") + "\n";
@@ -144,6 +153,10 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
     			public void onClick(DialogInterface dialog, int id) {
     				String message = "Error:\n";
     				message += "Type: oauth_message_signer_exception_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
     				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
     				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
     				if(ErrorDialogBuilder.this.data.get("request_url") != null)
@@ -162,6 +175,10 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
     			public void onClick(DialogInterface dialog, int id) {
     				String message = "Error:\n";
     				message += "Type: oauth_not_authorized_exception_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
     				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
     				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
     				if(ErrorDialogBuilder.this.data.get("request_url") != null)
@@ -180,6 +197,10 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
     			public void onClick(DialogInterface dialog, int id) {
     				String message = "Error:\n";
     				message += "Type: oauth_expectation_failed_exception_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
     				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
     				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
     				if(ErrorDialogBuilder.this.data.get("request_url") != null)
@@ -198,6 +219,10 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
     			public void onClick(DialogInterface dialog, int id) {
     				String message = "Error:\n";
     				message += "Type: oauth_communication_exception_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
     				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
     				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
     				if(ErrorDialogBuilder.this.data.get("request_url") != null)
@@ -221,7 +246,21 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
 		case R.string.unsupported_encoding_exception_error:
 			this.setNegativeButton(R.string.report_error_button, new DialogInterface.OnClickListener() {
     			public void onClick(DialogInterface dialog, int id) {
-    				//report error
+    				String message = "Error:\n";
+    				message += "Type: unsupported_encoding_exception_error\n";
+    				try {
+						message += "Version: " + ErrorDialogBuilder.this.activity.getPackageManager().getPackageInfo(ErrorDialogBuilder.this.activity.getPackageName(), 0 ).versionCode + "\n";
+					} catch (NameNotFoundException e) {
+					}
+    				message += "Account: " + ErrorDialogBuilder.this.data.getString("account") +"\n";
+    				message += "Host: " + ErrorDialogBuilder.this.data.getString("host") + "\n";
+    				message += "URL: " + ErrorDialogBuilder.this.data.getString("link") + "\n";
+    				message += "Device: " + ErrorDialogBuilder.this.data.getString("device_name") + "\n";
+    				message += "Recipient: " + ErrorDialogBuilder.this.data.getString("reciever") + "\n";
+    				message += "Stacktrace: \n";
+    				message += ErrorDialogBuilder.this.data.getString("stacktrace") + "\n";
+    				Intent report = getEmailIntent(message);
+    				ErrorDialogBuilder.this.activity.startActivity(report);
     			}
     		}).setCancelable(true);
 			break;
@@ -234,6 +273,9 @@ public class ErrorDialogBuilder extends AlertDialog.Builder {
 		i.setType("message/rfc822");
 		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"android@2cloudproject.com"});
 		i.putExtra(Intent.EXTRA_SUBJECT, "In-App Error Report");
+		String message_prefix = "Android Version: " + android.os.Build.VERSION.SDK + "\n";
+		message_prefix += "Phone: " + android.os.Build.MODEL + "\n";
+		message = message_prefix + message;
 		i.putExtra(Intent.EXTRA_TEXT   , message);
 		return i;
 	}

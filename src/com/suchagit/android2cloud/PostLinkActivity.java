@@ -245,6 +245,13 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		case HttpClient.STATUS_ERROR:
 			int error_code = resultData.getInt("response_code");
 			if(error_code == 600) {
+				Bundle error_data = new Bundle();
+				error_data.putString("account", account.getAccount());
+				error_data.putString("host", account.getHost());
+				error_data.putString("device_name", "Android");
+				error_data.putString("receiver", receiver);
+				error_data.putString("link", link);
+				showDialog(R.string.postlink_auth_error, error_data);
 				showDialog(R.string.unsupported_encoding_exception_error);
 			} else {
 				showDialog(R.string.default_error_message);

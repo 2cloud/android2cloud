@@ -98,7 +98,7 @@ public class OAuthActivity extends Activity {
 	        	SharedPreferences accounts = getSharedPreferences("android2cloud-accounts", 0);
 	        	String verifier = uri.getQueryParameter("oauth_token");
 	        	String account = uri.getQueryParameter("account");
-	        	String host = uri.getQueryParameter("protocol") + "://" + uri.getQueryParameter("domain") + "/";
+	        	String host = uri.getScheme() + "://" + uri.getHost() + "/";
 				try {
 					OAuthConsumer consumer = OAuth.getAccessToken(host, verifier);
 		        	OAuthAccount oauth_account = new OAuthAccount(account, host, consumer.getToken(), consumer.getTokenSecret());

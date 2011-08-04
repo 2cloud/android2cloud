@@ -36,6 +36,10 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="10dip"
         android:text="Send" />
+	<ProgressBar android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:id="@+id/sendLinkThrobber"
+		android:layout_alignParentRight="true" android:layout_below="@id/device_entry"
+		android_layout_marginLeft="10dp" android:visibility="gone"	/>
     <TextView
     	android:id="@+id/description"
     	android:layout_width="fill_parent"

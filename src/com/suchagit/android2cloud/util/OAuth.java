@@ -19,7 +19,7 @@ public class OAuth {
 	private static final String ACCESS_TOKEN_URL = "_ah/OAuthGetAccessToken";
 	private static final String AUTHORISE_TOKEN_URL = "_ah/OAuthAuthorizeToken?btmpl=mobile";
 	
-	public static final String CALLBACK_DOMAIN = "2cloud.app";
+	public static final String CALLBACK = "callback/android/";
 	public static final int INTENT_ID = 0x1234;
 	
 	
@@ -43,8 +43,7 @@ public class OAuth {
 			provider = makeProvider(host);
 		}
     	account = Uri.encode(account);
-    	Uri host_uri = Uri.parse(host);
-		String target = provider.retrieveRequestToken(consumer, "http://" + CALLBACK_DOMAIN+"/?account="+account+"&protocol="+host_uri.getScheme()+"&domain="+host_uri.getHost());
+		String target = provider.retrieveRequestToken(consumer, host+CALLBACK+"?account="+account);
 		return target;
 	}
 	

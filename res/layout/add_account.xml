@@ -8,14 +8,14 @@
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
         android:padding="20dp"
-    	android:text="android2cloud allows you to choose where your data is stored. Enter a name for the account (e.g., Default or Home Computer) and the URL of a host (e.g. http://android2cloud.appspot.com) to the input below to add it to your settings."/>
+    	android:text="2cloud allows you to choose where your data is stored. Enter a name for the account (e.g., Default or Home Computer) and the URL of a host (e.g. http://2cloudapp.appspot.com/) to the input below to add it to your settings."/>
     <TextView
     	android:id="@+id/basic_description"
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:padding="20dp"
     	android:textSize="18sp"
-    	android:text="android2cloud uses your Google account to authenticate you. This is done via OAuth, and at no time does the application have access to your password. Click the connect button below, and it will open the Google OAuth page. Just enter your username and password, and it will send you back to the application."
+    	android:text="2cloud uses your Google account to authenticate you. This is done via OAuth, and at no time does the application have access to your password. Click the connect button below, and it will open the Google OAuth page. Just enter your username and password, and it will send you back to the application."
     	android:visibility="gone"/>
     <Button
         android:id="@+id/basic_go"
@@ -63,17 +63,10 @@
         android:layout_marginTop="20dp"
         android:text="Connect" />
     <Button
-    	android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/add_account"
-        android:layout_alignTop="@id/add_account"
-        android:text="Cancel" />
-    <Button
     	android:id="@+id/help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/cancel"
+        android:layout_alignTop="@id/add_account"
         android:layout_alignParentLeft="true"
         android:text="Help" />
 </RelativeLayout>

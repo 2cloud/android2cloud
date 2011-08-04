@@ -42,7 +42,7 @@ public class OAuthWebView extends Activity {
 			public void onPageFinished(WebView view, String url){
 				super.onPageFinished(view, url);
 				Uri uri = Uri.parse(url);
-				if(OAuth.CALLBACK_DOMAIN.equals(uri.getHost())){
+				if(("/" + OAuth.CALLBACK).equals(uri.getPath())){
 					Intent intent = new Intent(OAuthWebView.this, OAuthActivity.class);
 					intent.setData(uri);
 					setResult(RESULT_OK, intent);

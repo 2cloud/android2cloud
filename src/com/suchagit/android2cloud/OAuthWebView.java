@@ -1,19 +1,20 @@
 package com.suchagit.android2cloud;
 
-import com.suchagit.android2cloud.util.OAuth;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class OAuthWebView extends Activity {
+import com.suchagit.android2cloud.errors.OAuthWebviewNullIntentDialogFragment;
+import com.suchagit.android2cloud.util.OAuth;
+
+public class OAuthWebView extends FragmentActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -24,6 +25,8 @@ public class OAuthWebView extends Activity {
 			request_url = this.getIntent().getDataString();
 		} else {
 			showDialog(R.string.oauthwebview_null_intent_error);
+    	    DialogFragment errorFragment = OAuthWebviewNullIntentDialogFragment.newInstance();
+    	    errorFragment.show(getSupportFragmentManager(), "dialog");
 		}
 		WebView browser= new WebView(this);
 		setContentView(browser);
@@ -51,14 +54,5 @@ public class OAuthWebView extends Activity {
 			}
 		});
 		browser.loadUrl(request_url);
-	}
-	
-	@Override
-	public Dialog onCreateDialog(int id) {
-		super.onCreateDialog(id);
-		ErrorDialogBuilder error = new ErrorDialogBuilder(OAuthWebView.this, new Bundle());
-		error.build(id);
-		AlertDialog alert = error.create();
-		return alert;
 	}
 }

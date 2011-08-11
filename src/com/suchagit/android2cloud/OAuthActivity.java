@@ -8,21 +8,27 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.support.v4.app.FragmentActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.suchagit.android2cloud.errors.OAuthActivityNullUriDialogFragment;
+import com.suchagit.android2cloud.errors.OAuthCommunicationExceptionDialogFragment;
+import com.suchagit.android2cloud.errors.OAuthExpectationFailedExceptionDialogFragment;
+import com.suchagit.android2cloud.errors.OAuthMessageSignerExceptionDialogFragment;
+import com.suchagit.android2cloud.errors.OAuthNotAuthorizedExceptionDialogFragment;
+import com.suchagit.android2cloud.errors.OAuthWebviewNullIntentDialogFragment;
 import com.suchagit.android2cloud.util.OAuth;
 import com.suchagit.android2cloud.util.OAuthAccount;
 
-public class OAuthActivity extends Activity {
+public class OAuthActivity extends FragmentActivity {
 	private EditText host_input;
 	private EditText account_input;
 	
@@ -52,7 +58,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host_input.getText().toString());
 					error_data.putString("account", account_input.getText().toString());
 					error_data.putString("request_url", requestUrl);
-					showDialog(R.string.oauth_message_signer_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthMessageSignerExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				} catch (OAuthNotAuthorizedException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -62,7 +69,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host_input.getText().toString());
 					error_data.putString("account", account_input.getText().toString());
 					error_data.putString("request_url", requestUrl);
-					showDialog(R.string.oauth_not_authorized_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthNotAuthorizedExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				} catch (OAuthExpectationFailedException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -72,7 +80,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host_input.getText().toString());
 					error_data.putString("account", account_input.getText().toString());
 					error_data.putString("request_url", requestUrl);
-					showDialog(R.string.oauth_expectation_failed_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthExpectationFailedExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				} catch (OAuthCommunicationException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -82,7 +91,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host_input.getText().toString());
 					error_data.putString("account", account_input.getText().toString());
 					error_data.putString("request_url", requestUrl);
-					showDialog(R.string.oauth_communication_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				}
 	    	}
 	    });
@@ -119,6 +129,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("account", account);
 					error_data.putString("verifier", verifier);
 					showDialog(R.string.oauth_message_signer_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthMessageSignerExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				} catch (OAuthNotAuthorizedException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -128,7 +140,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host);
 					error_data.putString("account", account);
 					error_data.putString("verifier", verifier);
-					showDialog(R.string.oauth_not_authorized_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthNotAuthorizedExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				} catch (OAuthExpectationFailedException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -138,7 +151,8 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host);
 					error_data.putString("account", account);
 					error_data.putString("verifier", verifier);
-					showDialog(R.string.oauth_expectation_failed_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthExpectationFailedExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				} catch (OAuthCommunicationException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -148,22 +162,16 @@ public class OAuthActivity extends Activity {
 					error_data.putString("host", host);
 					error_data.putString("account", account);
 					error_data.putString("verifier", verifier);
-					showDialog(R.string.oauth_communication_exception_error, error_data);
+	        	    DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				}
 	        } else {
-	        	showDialog(R.string.oauthactivity_null_uri_error);
+        	    DialogFragment errorFragment = OAuthActivityNullUriDialogFragment.newInstance();
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 	        }
     	} else {
-    		showDialog(R.string.oauthwebview_null_intent_error);
+    	    DialogFragment errorFragment = OAuthWebviewNullIntentDialogFragment.newInstance();
+    	    errorFragment.show(getSupportFragmentManager(), "dialog");
     	}
-	}
-	
-	@Override
-	public Dialog onCreateDialog(int id, Bundle data) {
-		super.onCreateDialog(id, data);
-		ErrorDialogBuilder error = new ErrorDialogBuilder(OAuthActivity.this, data);
-		error.build(id);
-		AlertDialog alert = error.create();
-		return alert;
 	}
 }

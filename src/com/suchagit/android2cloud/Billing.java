@@ -16,8 +16,6 @@
 
 package com.suchagit.android2cloud;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -25,6 +23,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -33,13 +33,15 @@ import android.widget.TextView;
 import com.suchagit.android2cloud.BillingService.RequestPurchase;
 import com.suchagit.android2cloud.Consts.PurchaseState;
 import com.suchagit.android2cloud.Consts.ResponseCode;
+import com.suchagit.android2cloud.errors.BillingCannotConnectDialogFragment;
+import com.suchagit.android2cloud.errors.BillingNotSupportedDialogFragment;
 import com.suchagit.android2cloud.util.OAuthAccount;
 import com.suchagit.android2cloud.util.PaymentNotificationResponse;
 
 /**
  * A sample application that demonstrates in-app billing.
  */
-public class Billing extends Activity implements PaymentNotificationResponse.Receiver {
+public class Billing extends FragmentActivity implements PaymentNotificationResponse.Receiver {
     private static final String TAG = "Billing";
 
     /**
@@ -209,23 +211,14 @@ public class Billing extends Activity implements PaymentNotificationResponse.Rec
     protected Dialog onCreateDialog(int id) {
         switch (id) {
         case DIALOG_CANNOT_CONNECT_ID:
-            return createDialog(R.string.cannot_connect_title,
-                    R.string.cannot_connect_message);
+    	    DialogFragment cannotConnectFragment = BillingCannotConnectDialogFragment.newInstance();
+    	    cannotConnectFragment.show(getSupportFragmentManager(), "dialog");
         case DIALOG_BILLING_NOT_SUPPORTED_ID:
-            return createDialog(R.string.billing_not_supported_title,
-                    R.string.billing_not_supported_message);
+    	    DialogFragment unsupportedFragment = BillingNotSupportedDialogFragment.newInstance();
+    	    unsupportedFragment.show(getSupportFragmentManager(), "dialog");
         default:
             return null;
         }
-    }
-
-    private Dialog createDialog(int titleId, int messageId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(titleId)
-            .setMessage(messageId)
-            .setCancelable(false)
-            .setPositiveButton(android.R.string.ok, null);
-        return builder.create();
     }
 
 	public void onReceiveResult(int resultCode, Bundle resultData) {

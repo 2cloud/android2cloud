@@ -50,4 +50,5 @@
 	<string name="no_account_selected_error_account_button">Choose an Account</string>
 	<string name="over_quota_error_pay_button">Pay $1</string>
 	<string name="oauth_communication_exception_error_networking_button">Open Networking Settings</string>
+	<string name="select_link_title">Select a link to send:</string>
 </resources>

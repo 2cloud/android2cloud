@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,11 +23,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.suchagit.android2cloud.errors.DefaultErrorDialogFragment;
+import com.suchagit.android2cloud.errors.HttpClientErrorDialogFragment;
+import com.suchagit.android2cloud.errors.IntentWithoutLinkDialogFragment;
+import com.suchagit.android2cloud.errors.NoAccountSelectedDialogFragment;
+import com.suchagit.android2cloud.errors.NoAccountsDialogFragment;
+import com.suchagit.android2cloud.errors.OverQuotaDialogFragment;
+import com.suchagit.android2cloud.errors.PostLinkAuthErrorDialogFragment;
+import com.suchagit.android2cloud.errors.PostLinkNullLinkDialogFragment;
+import com.suchagit.android2cloud.errors.PostLinkNullReceiverDialogFragment;
+import com.suchagit.android2cloud.errors.SelectLinkDialogFragment;
+import com.suchagit.android2cloud.errors.UnsupportedEncodingExceptionDialogFragment;
 import com.suchagit.android2cloud.util.AddLinkResponse;
 import com.suchagit.android2cloud.util.HttpClient;
 import com.suchagit.android2cloud.util.OAuthAccount;
 
-public class PostLinkActivity extends Activity implements AddLinkResponse.Receiver {
+public class PostLinkActivity extends FragmentActivity implements AddLinkResponse.Receiver {
 	
 	public static final int BILLING_INTENT_CODE = 0x1079;
 
@@ -78,10 +87,12 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
         			receiver = device_entry.getText().toString();
 	        		if(link == null || link.trim().equals("")) {
 	        			popup = true;
-	        			showDialog(R.string.postlink_null_link_error);
+		        	    DialogFragment errorFragment = PostLinkNullLinkDialogFragment.newInstance();
+		        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 	        		} else if(receiver == null || receiver.trim().equals("")) {
 	        			popup = true;
-	        			showDialog(R.string.postlink_null_receiver_error);
+		        	    DialogFragment errorFragment = PostLinkNullReceiverDialogFragment.newInstance();
+		        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 	        		} else {
 	        			send_button.setVisibility(View.GONE);
 	        			throbber.setVisibility(View.VISIBLE);
@@ -110,10 +121,12 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 				settings_editor.commit();
 			} else if(accounts.length == 1 && accounts[0].equals("")){
 				popup = true;
-	        	showDialog(R.string.no_accounts_error);
+        	    DialogFragment errorFragment = NoAccountsDialogFragment.newInstance();
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 			} else {
 				popup = true;
-				showDialog(R.string.no_account_selected_error);
+        	    DialogFragment errorFragment = NoAccountSelectedDialogFragment.newInstance();
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		}
 		
@@ -135,24 +148,15 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
             		setContentView(R.layout.main);
             	}
     	    	url_input = (EditText) findViewById(R.id.link_entry);
-            	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            	builder.setTitle("Choose a link to share:");
-            	builder.setItems(matches_cs, new DialogInterface.OnClickListener() {
-            	    public void onClick(DialogInterface dialog, int item) {
-            	        link = (String) matches_cs[item];
-            	        url_input.setText(link);
-            	        if(settings.getBoolean("silent", false)) {
-            	        	sendLink();
-            	        	finish();
-            	        }
-            	    }
-            	});
-            	AlertDialog alert = builder.create();
-            	alert.show();
+    	    	Bundle data = new Bundle();
+    	    	data.putCharSequenceArray("choices", matches_cs);
+        	    DialogFragment errorFragment = SelectLinkDialogFragment.newInstance(data);
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
             }else if(matches.size() == 1){
             	link = (String) matches_cs[0];
             } else {
-            	showDialog(R.string.intent_without_link_error);
+        	    DialogFragment errorFragment = IntentWithoutLinkDialogFragment.newInstance();
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
             }
 		}
     	
@@ -180,15 +184,6 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		super.onPause();
 		mReceiver.setReceiver(null);
 		contentSet = false;
-	}
-	
-	@Override
-	public Dialog onCreateDialog(int id, Bundle data) {
-		super.onCreateDialog(id, data);
-		ErrorDialogBuilder error = new ErrorDialogBuilder(PostLinkActivity.this, data);
-		error.build(id);
-		AlertDialog alert = error.create();
-		return alert;
 	}
 	
     @Override
@@ -229,7 +224,8 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
     				error_data.putString("token", account.getToken());
     				error_data.putString("secret", account.getKey());
     				error_data.putString("raw_data", resultData.getString("raw_result"));
-					showDialog(R.string.http_client_error, error_data);
+	        	    DialogFragment errorFragment = HttpClientErrorDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				}
 			} else if(code == 401) {
 				Bundle error_data = new Bundle();
@@ -237,9 +233,11 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 				error_data.putString("host", account.getHost());
 				error_data.putString("token", account.getToken());
 				error_data.putString("secret", account.getKey());
-				showDialog(R.string.postlink_auth_error, error_data);
+        	    DialogFragment errorFragment = PostLinkAuthErrorDialogFragment.newInstance(error_data);
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 			} else if(code == 503) {
-				showDialog(R.string.over_quota_error);
+        	    DialogFragment errorFragment = OverQuotaDialogFragment.newInstance();
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			break;
 		case HttpClient.STATUS_ERROR:
@@ -251,10 +249,11 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 				error_data.putString("device_name", "Android");
 				error_data.putString("receiver", receiver);
 				error_data.putString("link", link);
-				showDialog(R.string.postlink_auth_error, error_data);
-				showDialog(R.string.unsupported_encoding_exception_error);
+        	    DialogFragment errorFragment = UnsupportedEncodingExceptionDialogFragment.newInstance(error_data);
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 			} else {
-				showDialog(R.string.default_error_message);
+        	    DialogFragment errorFragment = DefaultErrorDialogFragment.newInstance();
+        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			break;
 		}
@@ -275,5 +274,15 @@ public class PostLinkActivity extends Activity implements AddLinkResponse.Receiv
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("receiver", receiver);
 		editor.commit();
+	}
+	
+	public void linkChosen(String link) {
+    	settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		url_input = (EditText) findViewById(R.id.link_entry);
+        url_input.setText(link);
+        if(settings.getBoolean("silent", false)) {
+        	sendLink();
+        	finish();
+        }
 	}
 }

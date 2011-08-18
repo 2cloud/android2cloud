@@ -91,6 +91,7 @@ public class OAuthActivity extends FragmentActivity {
 					error_data.putString("host", host_input.getText().toString());
 					error_data.putString("account", account_input.getText().toString());
 					error_data.putString("request_url", requestUrl);
+					error_data.putString("response_body", e.getResponseBody());
 	        	    DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(error_data);
 	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				}
@@ -117,8 +118,7 @@ public class OAuthActivity extends FragmentActivity {
 		        	SharedPreferences.Editor editor = settings.edit();
 		        	editor.putString("account", account);
 		        	editor.commit();
-		        	Intent return_intent = new Intent(this, PostLinkActivity.class);
-		        	this.startActivityForResult(return_intent, OAuth.INTENT_ID);
+		        	finish();
 				} catch (OAuthMessageSignerException e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
@@ -162,6 +162,7 @@ public class OAuthActivity extends FragmentActivity {
 					error_data.putString("host", host);
 					error_data.putString("account", account);
 					error_data.putString("verifier", verifier);
+					error_data.putString("response_body", e.getResponseBody());
 	        	    DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(error_data);
 	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
 				}

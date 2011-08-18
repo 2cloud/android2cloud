@@ -30,6 +30,7 @@ public class OAuthCommunicationExceptionDialogFragment extends DialogFragment {
         final String account = getArguments().getString("account");
         final String verifier = getArguments().getString("verifier");
         final String requestUrl = getArguments().getString("request_url");
+        final String responseBody = getArguments().getString("response_body");
 
         return new AlertDialog.Builder(getActivity())
     		.setCancelable(false)
@@ -52,6 +53,8 @@ public class OAuthCommunicationExceptionDialogFragment extends DialogFragment {
                 			message += "Request URL: " + requestUrl + "\n";
                 		else if(verifier != null)
                 			message += "Verifier: " + verifier + "\n";
+                		message += "Response Body: \n";
+                		message += responseBody + "\n";
                 		message += "Stacktrace: \n";
                 		message += stacktrace + "\n";
                 		Intent report = ErrorMethods.getEmailIntent(OAuthCommunicationExceptionDialogFragment.this, "oauth_communication_exception_error", message);

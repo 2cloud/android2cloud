@@ -30,7 +30,7 @@ public class NoAccountsDialogFragment extends DialogFragment {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
     	    			Intent i = new Intent(getActivity(), OAuthActivity.class);
-    	    			getActivity().startActivity(i); 
+    	    			getActivity().startActivityForResult(i, 0x1234); 
                     }
                 }
             )

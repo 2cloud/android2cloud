@@ -60,6 +60,10 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 	private boolean contentSet = false;
 	
 	public final static int EDIT_SETTINGS_REQ_CODE = 0x1234;
+
+	private static final int NO_ACCOUNT = 0;
+	private static final int NO_ACCOUNT_SELECTED = 2;
+	private static final int ACCOUNT = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstance) {
@@ -70,110 +74,57 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		receiver = settings.getString("receiver", "Chrome");
     	
 		if(!settings.getBoolean("silent", false)) {
-			if(!contentSet) {
-				setContentView(R.layout.main);
-				contentSet = true;
-			}
-	    	send_button = (Button) findViewById(R.id.send);
-	    	device_entry = (EditText) findViewById(R.id.device_entry);
-	    	url_input = (EditText) findViewById(R.id.link_entry);
-	    	account_display = (TextView) findViewById(R.id.account_label);
-	    	throbber = (ProgressBar) findViewById(R.id.sendLinkThrobber);
-	    	
-	    	
-	    	send_button.setOnClickListener(new View.OnClickListener() {
-	        	public void onClick(View v) {
-	        		link = url_input.getText().toString();
-        			receiver = device_entry.getText().toString();
-	        		if(link == null || link.trim().equals("")) {
-	        			popup = true;
-		        	    DialogFragment errorFragment = PostLinkNullLinkDialogFragment.newInstance();
-		        	    errorFragment.show(getSupportFragmentManager(), "dialog");
-	        		} else if(receiver == null || receiver.trim().equals("")) {
-	        			popup = true;
-		        	    DialogFragment errorFragment = PostLinkNullReceiverDialogFragment.newInstance();
-		        	    errorFragment.show(getSupportFragmentManager(), "dialog");
-	        		} else {
-	        			send_button.setVisibility(View.GONE);
-	        			throbber.setVisibility(View.VISIBLE);
-	        			sendLink();
-	        		}
-	        	}
-	        });
+			render();
 		}
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		//check to make sure they have an account
 		popup = false;
-		
-		settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		accounts_preferences = getSharedPreferences("android2cloud-accounts", 0);
-		
-		String account_name = settings.getString("account", "");
-		account = new OAuthAccount(account_name, accounts_preferences);
-		String[] accounts = OAuthAccount.getAccounts(accounts_preferences);
-		if(account_name.equals("") || accounts.length == 0) {
-			if(accounts.length == 1 && !account_name.equals("")){
-				SharedPreferences.Editor settings_editor = settings.edit();
-				settings_editor.putString("account", accounts[0]);
-				settings_editor.commit();
-			} else if(accounts.length == 1 && accounts[0].equals("")){
-				popup = true;
-        	    DialogFragment errorFragment = NoAccountsDialogFragment.newInstance();
-        	    errorFragment.show(getSupportFragmentManager(), "dialog");
-			} else {
-				popup = true;
-        	    DialogFragment errorFragment = NoAccountSelectedDialogFragment.newInstance();
-        	    errorFragment.show(getSupportFragmentManager(), "dialog");
-			}
+		int accountStatus = checkAccount();
+		switch(accountStatus) {
+		case NO_ACCOUNT:
+			popup = true;
+    	    DialogFragment noAccountFragment = NoAccountsDialogFragment.newInstance();
+    	    noAccountFragment.show(getSupportFragmentManager(), "dialog");
+    	    break;
+		case NO_ACCOUNT_SELECTED:
+			popup = true;
+    	    DialogFragment selectAccountFragment = NoAccountSelectedDialogFragment.newInstance();
+    	    selectAccountFragment.show(getSupportFragmentManager(), "dialog");
+    	    break;
 		}
 		
+		// pull the URL from the intent
 		if(Intent.ACTION_SEND.equals(getIntent().getAction())) {
-			link = getIntent().getExtras().getString(Intent.EXTRA_TEXT);
-			Log.d("PostLinkActivity", link);
-        	String regex = "\\b(\\w+)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-            Pattern patt = Pattern.compile(regex);
-            Matcher matcher = patt.matcher(link);
-            ArrayList<String> matches = new ArrayList<String>();
-            while(matcher.find()){
-            	matches.add(matcher.group());
-    			Log.d("PostLinkActivity", matcher.group());
-            }
-            final CharSequence[] matches_cs = matches.toArray(new CharSequence[matches.size()]);
-            if(matches.size() > 1) {
-            	popup = true;
-            	if(!contentSet) {
-            		setContentView(R.layout.main);
-            	}
-    	    	url_input = (EditText) findViewById(R.id.link_entry);
-    	    	Bundle data = new Bundle();
-    	    	data.putCharSequenceArray("choices", matches_cs);
-        	    DialogFragment errorFragment = SelectLinkDialogFragment.newInstance(data);
-        	    errorFragment.show(getSupportFragmentManager(), "dialog");
-            }else if(matches.size() == 1){
-            	link = (String) matches_cs[0];
-            } else {
-        	    DialogFragment errorFragment = IntentWithoutLinkDialogFragment.newInstance();
-        	    errorFragment.show(getSupportFragmentManager(), "dialog");
-            }
+			String intentText = getStringFromIntent(getIntent());
+			try{
+				link = getLinkFromString(intentText);
+			} catch(NoLinkFoundException e){
+				popup = true;
+				render();
+	    	    DialogFragment errorFragment = IntentWithoutLinkDialogFragment.newInstance();
+	    	    errorFragment.show(getSupportFragmentManager(), "dialog");
+			} catch(TooManyLinksException e) {
+	        	popup = true;
+	        	render();
+		    	Bundle data = new Bundle();
+		    	data.putCharSequenceArray("choices", e.getLinks());
+	    	    DialogFragment errorFragment = SelectLinkDialogFragment.newInstance(data);
+	    	    errorFragment.show(getSupportFragmentManager(), "dialog");
+			}
 		}
     	
 		mReceiver = new AddLinkResponse(new Handler());
 		mReceiver.setReceiver(this);
-		if(settings.getBoolean("silent", false) && popup == false && link.trim() != "") {
+		if(settings.getBoolean("silent", false) && popup == false && link != null && link.trim() != "") {
 			sendLink();
 			finish();
 		} else {
-			if(!contentSet) {
-				setContentView(R.layout.main);
-			}
-	    	send_button = (Button) findViewById(R.id.send);
-	    	device_entry = (EditText) findViewById(R.id.device_entry);
-	    	url_input = (EditText) findViewById(R.id.link_entry);
-	    	account_display = (TextView) findViewById(R.id.account_label);
-	    	throbber = (ProgressBar) findViewById(R.id.sendLinkThrobber);
+			render();
 	    	url_input.setText(link);
 	    	device_entry.setText(receiver);
 	    	account_display.setText("Account: "+account.getAccount());
@@ -259,6 +210,85 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		}
 	}
 	
+	private void render() {
+		if(!contentSet) {
+			setContentView(R.layout.main);
+			contentSet = true;
+			
+	    	send_button = (Button) findViewById(R.id.send);
+	    	device_entry = (EditText) findViewById(R.id.device_entry);
+	    	url_input = (EditText) findViewById(R.id.link_entry);
+	    	account_display = (TextView) findViewById(R.id.account_label);
+	    	throbber = (ProgressBar) findViewById(R.id.sendLinkThrobber);
+	    	
+	    	
+	    	send_button.setOnClickListener(new View.OnClickListener() {
+	        	public void onClick(View v) {
+	        		link = url_input.getText().toString();
+	    			receiver = device_entry.getText().toString();
+	        		if(link == null || link.trim().equals("")) {
+	        			popup = true;
+		        	    DialogFragment errorFragment = PostLinkNullLinkDialogFragment.newInstance();
+		        	    errorFragment.show(getSupportFragmentManager(), "dialog");
+	        		} else if(receiver == null || receiver.trim().equals("")) {
+	        			popup = true;
+		        	    DialogFragment errorFragment = PostLinkNullReceiverDialogFragment.newInstance();
+		        	    errorFragment.show(getSupportFragmentManager(), "dialog");
+	        		} else {
+	        			send_button.setVisibility(View.GONE);
+	        			throbber.setVisibility(View.VISIBLE);
+	        			sendLink();
+	        		}
+    			}
+	    	});
+		}
+	}
+	
+	private int checkAccount() {
+		settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		accounts_preferences = getSharedPreferences("android2cloud-accounts", 0);
+		
+		String account_name = settings.getString("account", "");
+		account = new OAuthAccount(account_name, accounts_preferences);
+		String[] accounts = OAuthAccount.getAccounts(accounts_preferences);
+		if(account_name.equals("") || accounts.length == 0) {
+			if(accounts.length == 1 && !account_name.equals("")){
+				SharedPreferences.Editor settings_editor = settings.edit();
+				settings_editor.putString("account", accounts[0]);
+				settings_editor.commit();
+				return ACCOUNT;
+			} else if(accounts.length == 1 && accounts[0].equals("")){
+				return NO_ACCOUNT;
+			} else {
+				return NO_ACCOUNT_SELECTED;
+			}
+		}
+		return ACCOUNT;
+	}
+	
+	private String getStringFromIntent(Intent intent) {
+		return intent.getExtras().getString(Intent.EXTRA_TEXT);
+	}
+	
+	private String getLinkFromString(String string) throws NoLinkFoundException, TooManyLinksException {
+		Log.d("PostLinkActivity", "getLinkFromString: "+string);
+    	String regex = "\\b(\\w+)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+        Pattern patt = Pattern.compile(regex);
+        Matcher matcher = patt.matcher(string);
+        ArrayList<String> matches = new ArrayList<String>();
+        while(matcher.find()){
+        	matches.add(matcher.group());
+			Log.d("PostLinkActivity", matcher.group());
+        }
+        final CharSequence[] matches_cs = matches.toArray(new CharSequence[matches.size()]);
+        if(matches.size() > 1) {
+        	throw new TooManyLinksException(matches_cs);
+        }else if(matches.size() == 1){
+        	return (String) matches_cs[0];
+        } else {
+        	throw new NoLinkFoundException();
+        }
+	}
 	private void sendLink() {
 		Intent intent = new Intent();
 		intent.setComponent(new ComponentName("com.suchagit.android2cloud", "com.suchagit.android2cloud.HttpService"));
@@ -276,13 +306,30 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		editor.commit();
 	}
 	
-	public void linkChosen(String link) {
+	public void linkChosen(String chosenLink) {
     	settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		url_input = (EditText) findViewById(R.id.link_entry);
-        url_input.setText(link);
+        url_input.setText(chosenLink);
         if(settings.getBoolean("silent", false)) {
+        	link = chosenLink;
         	sendLink();
         	finish();
         }
+	}
+	
+	private class TooManyLinksException extends Exception {
+		CharSequence[] matches;
+		
+		TooManyLinksException(CharSequence[] links) {
+			this.matches = links;
+		}
+		
+		private CharSequence[] getLinks() {
+			return this.matches;
+		}
+	}
+	
+	private class NoLinkFoundException extends Exception {
+		// just defining the class
+		// no real data needed
 	}
 }

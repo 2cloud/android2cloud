@@ -20,8 +20,9 @@ public class HttpClient extends DefaultHttpClient {
 	public static final int STATUS_RUNNING = 0;
 	public static final int STATUS_ERROR = -1;
 	
-	protected static final String CONSUMER_KEY = "";
-	protected static final String CONSUMER_SECRET = "";
+	protected static final String CONSUMER_KEY = "CONSUMER_KEY_PLACEHOLDER";
+	protected static final String CONSUMER_SECRET = "CONSUMER_SECRET_PLACEHOLDER";
+	
 	private String oauth_token;
 	private String oauth_secret;
 	

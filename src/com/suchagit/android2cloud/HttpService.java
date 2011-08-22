@@ -1,5 +1,7 @@
 package com.suchagit.android2cloud;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.client.methods.HttpRequestBase;
@@ -48,10 +50,19 @@ public class HttpService extends IntentService {
 			b.putString("raw_result", response);
 			result.send(HttpClient.STATUS_COMPLETE, b);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			// need to build and return an error object here
 			b.putInt("response_code", 600);
 			b.putString("type", "unsupported_encoding_exception_error");
+			result.send(HttpClient.STATUS_ERROR, b);
+		} catch (IllegalStateException e) {
+			b.putInt("response_code", 600);
+			b.putString("type", "illegal_state_exception_error");
+			b.putString("request_type", requestType);
+			if(request != null)
+				b.putString("host", request.getURI().getHost());
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			b.putString("stacktrace", sw.toString());
 			result.send(HttpClient.STATUS_ERROR, b);
 		}
 	}

@@ -51,4 +51,5 @@
 	<string name="over_quota_error_pay_button">Pay $1</string>
 	<string name="oauth_communication_exception_error_networking_button">Open Networking Settings</string>
 	<string name="select_link_title">Select a link to send:</string>
+	<string name="illegal_state_exception_error">There was a problem contacting the host. We apologise for the issue, and are working on finding a fix. Please report this issue using the button below to assist us in fixing this bug.</string>
 </resources>

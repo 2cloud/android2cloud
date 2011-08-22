@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.suchagit.android2cloud.errors.DefaultErrorDialogFragment;
 import com.suchagit.android2cloud.errors.HttpClientErrorDialogFragment;
+import com.suchagit.android2cloud.errors.IllegalStateExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.IntentWithoutLinkDialogFragment;
 import com.suchagit.android2cloud.errors.NoAccountSelectedDialogFragment;
 import com.suchagit.android2cloud.errors.NoAccountsDialogFragment;
@@ -194,14 +195,24 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		case HttpClient.STATUS_ERROR:
 			int error_code = resultData.getInt("response_code");
 			if(error_code == 600) {
-				Bundle error_data = new Bundle();
-				error_data.putString("account", account.getAccount());
-				error_data.putString("host", account.getHost());
-				error_data.putString("device_name", "Android");
-				error_data.putString("receiver", receiver);
-				error_data.putString("link", link);
-        	    DialogFragment errorFragment = UnsupportedEncodingExceptionDialogFragment.newInstance(error_data);
-        	    errorFragment.show(getSupportFragmentManager(), "dialog");
+				if(resultData.getString("type").equals("unsupported_encoding_exception_error")) {
+					Bundle error_data = new Bundle();
+					error_data.putString("account", account.getAccount());
+					error_data.putString("host", account.getHost());
+					error_data.putString("device_name", "Android");
+					error_data.putString("receiver", receiver);
+					error_data.putString("link", link);
+	        	    DialogFragment errorFragment = UnsupportedEncodingExceptionDialogFragment.newInstance(error_data);
+	        	    errorFragment.show(getSupportFragmentManager(), "dialog");
+				} else if(resultData.getString("type").equals("illegal_state_exception_error")) {
+					Bundle error_data = new Bundle();
+					error_data.putString("host", account.getHost());
+					error_data.putString("request_type", resultData.getString("request_type"));
+					error_data.putString("request_host", resultData.getString("host"));
+					error_data.putString("stacktrace", resultData.getString("stacktrace"));
+					DialogFragment illegalStateFragment = IllegalStateExceptionDialogFragment.newInstance(error_data);
+					illegalStateFragment.show(getSupportFragmentManager(), "dialog");
+				}
 			} else {
         	    DialogFragment errorFragment = DefaultErrorDialogFragment.newInstance();
         	    errorFragment.show(getSupportFragmentManager(), "dialog");

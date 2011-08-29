@@ -17,5 +17,9 @@
             android:key="addNewAccount"
             android:title="Add New Account"
             android:summary="Add a Google account." />
+        <Preference
+            android:key="deleteAccount"
+            android:title="Delete Current Account"
+            android:summary="Delete the account that is selected." />
     </PreferenceCategory>
 </PreferenceScreen>

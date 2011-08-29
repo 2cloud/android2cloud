@@ -10,6 +10,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.util.AddLinkRequest;
 import com.suchagit.android2cloud.util.HttpClient;
 import com.suchagit.android2cloud.util.PaymentNotificationRequest;

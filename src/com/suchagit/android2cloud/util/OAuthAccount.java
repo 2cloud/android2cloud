@@ -65,6 +65,17 @@ public class OAuthAccount {
 		return this;
 	}
 	
+	public boolean delete(SharedPreferences preferences) {
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.remove("host_"+this.account);
+		editor.remove("oauth_token_"+this.account);
+		editor.remove("oauth_secret_"+this.account);
+		String accounts = preferences.getString("accounts", "|"+this.account+"|");
+		accounts = accounts.replace("|"+this.account+"|", "|");
+		editor.putString("accounts", accounts);
+		return editor.commit();
+	}
+	
 	public void load(SharedPreferences preferences) {
 		this.setHost(preferences.getString("host_"+this.account, "error"));
 		this.setToken(preferences.getString("oauth_token_"+this.account, "error"));

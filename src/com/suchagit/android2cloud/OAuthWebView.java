@@ -11,6 +11,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.errors.OAuthWebviewNullIntentDialogFragment;
 import com.suchagit.android2cloud.util.OAuth;
 

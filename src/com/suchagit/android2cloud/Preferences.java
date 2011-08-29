@@ -1,5 +1,6 @@
 package com.suchagit.android2cloud;
 
+import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.util.OAuthAccount;
 
 import android.content.Intent;
@@ -30,6 +31,17 @@ public class Preferences extends PreferenceActivity implements OnPreferenceChang
 			public boolean onPreferenceClick(Preference preference) {
 				Intent i = new Intent(Preferences.this, OAuthActivity.class);
 				startActivityForResult(i, ACCOUNT_LIST_REQ_CODE);
+				return true;
+			}
+		});
+
+		Preference deleteAccount = (Preference) findPreference("deleteAccount");
+		deleteAccount.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				SharedPreferences accounts = getSharedPreferences("android2cloud-accounts", 0);
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+				OAuthAccount account = new OAuthAccount(prefs.getString("account", ""), accounts);
+				account.delete(prefs);
 				return true;
 			}
 		});

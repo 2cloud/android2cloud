@@ -2,6 +2,7 @@
 
 package com.suchagit.android2cloud;
 
+import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.BillingService.RequestPurchase;
 import com.suchagit.android2cloud.Consts.PurchaseState;
 import com.suchagit.android2cloud.Consts.ResponseCode;

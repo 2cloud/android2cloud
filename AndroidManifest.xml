@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.suchagit.android2cloud" android:versionCode="27"
-	android:installLocation="auto"
-	android:versionName="2.1.1">
+	package="com.secondbit.debug2cloud" android:installLocation="auto" android:versionName="2.1.2" android:versionCode="28">
 
 	<uses-sdk android:minSdkVersion="3"/>
 
@@ -12,7 +10,7 @@
 
 	<application android:icon="@drawable/ic_launcher_2cloud"
 		android:label="@string/app_name">
-		<activity android:name=".PostLinkActivity" android:label="@string/app_name">
+		<activity android:name="com.suchagit.android2cloud.PostLinkActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -24,26 +22,26 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".OAuthActivity" android:label="@string/app_name">
+		<activity android:name="com.suchagit.android2cloud.OAuthActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<data android:scheme="2cloud" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".OAuthWebView" android:label="@string/app_name"
+		<activity android:name="com.suchagit.android2cloud.OAuthWebView" android:label="@string/app_name"
 			android:configChanges="orientation" />
 
-		<activity android:name=".Preferences" android:label="@string/app_name">
+		<activity android:name="com.suchagit.android2cloud.Preferences" android:label="@string/app_name">
 		</activity>
 
-		<service android:name=".HttpService"></service>
+		<service android:name="com.suchagit.android2cloud.HttpService"></service>
 
-		<activity android:name=".Billing" android:label="@string/app_name"
+		<activity android:name="com.suchagit.android2cloud.Billing" android:label="@string/app_name"
 			android:configChanges="orientation" />
-		<service android:name=".BillingService" />
+		<service android:name="com.suchagit.android2cloud.BillingService" />
 
-		<receiver android:name=".BillingReceiver">
+		<receiver android:name="com.suchagit.android2cloud.BillingReceiver">
 			<intent-filter>
 				<action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
 				<action android:name="com.android.vending.billing.RESPONSE_CODE" />

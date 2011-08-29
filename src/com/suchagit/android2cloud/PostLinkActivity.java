@@ -23,7 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.errors.DefaultErrorDialogFragment;
+import com.suchagit.android2cloud.errors.DeprecatedHostExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.HttpClientErrorDialogFragment;
 import com.suchagit.android2cloud.errors.IllegalStateExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.IntentWithoutLinkDialogFragment;
@@ -89,14 +91,26 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		switch(accountStatus) {
 		case NO_ACCOUNT:
 			popup = true;
+			render();
     	    DialogFragment noAccountFragment = NoAccountsDialogFragment.newInstance();
     	    noAccountFragment.show(getSupportFragmentManager(), "dialog");
     	    break;
 		case NO_ACCOUNT_SELECTED:
 			popup = true;
+			render();
     	    DialogFragment selectAccountFragment = NoAccountSelectedDialogFragment.newInstance();
     	    selectAccountFragment.show(getSupportFragmentManager(), "dialog");
     	    break;
+		}
+		
+		try {
+			checkHost(account.getHost());
+		} catch(DeprecatedHostException e) {
+			popup = true;
+			render();
+			account.delete(settings);
+			DialogFragment deprecatedHostFragment = DeprecatedHostExceptionDialogFragment.newInstance();
+			deprecatedHostFragment.show(getSupportFragmentManager(), "dialog");
 		}
 		
 		// pull the URL from the intent
@@ -327,6 +341,18 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
         }
 	}
 	
+	public void checkHost(String host) throws DeprecatedHostException {
+		if(host == null) {
+			host = "";
+		}
+		String domain = host.replace("http://", "");
+		domain = domain.replace("https://", "");
+		domain = domain.replace("/", "");
+		if(domain.equals("android2cloud.appspot.com")) {
+			throw new DeprecatedHostException(domain);
+		}
+	}
+	
 	private class TooManyLinksException extends Exception {
 		CharSequence[] matches;
 		
@@ -336,6 +362,19 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		
 		private CharSequence[] getLinks() {
 			return this.matches;
+		}
+	}
+	
+	
+	public class DeprecatedHostException extends Exception {
+		String domain;
+		
+		DeprecatedHostException(String host) {
+			this.domain = host;
+		}
+		
+		public String getDomain() {
+			return this.domain;
 		}
 	}
 	

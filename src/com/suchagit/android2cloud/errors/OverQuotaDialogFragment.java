@@ -9,7 +9,7 @@ import android.support.v4.app.DialogFragment;
 
 import com.suchagit.android2cloud.Billing;
 import com.suchagit.android2cloud.PostLinkActivity;
-import com.suchagit.android2cloud.R;
+import com.secondbit.debug2cloud.R;
 
 public class OverQuotaDialogFragment extends DialogFragment {
 	

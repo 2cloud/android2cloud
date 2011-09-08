@@ -199,7 +199,7 @@ public class OAuthActivity extends FragmentActivity implements CheckTimeResponse
     public void getServerTime() {
 		Intent intent = new Intent();
 		intent.setComponent(new ComponentName("com.suchagit.android2cloud", "com.suchagit.android2cloud.HttpService"));
-		intent.setAction("CheckTime");
+		intent.setAction("com.suchagit.android2cloud.CheckTime");
 		intent.putExtra("com.suchagit.android2cloud.result_receiver", mReceiver);
 		intent.putExtra("com.suchagit.android2cloud.host", host_input.getText().toString());
 		startService(intent);

@@ -106,7 +106,7 @@ public class Billing extends FragmentActivity implements PaymentNotificationResp
                 statusText.setText("Contacting server...");
         		Intent intent = new Intent();
         		intent.setComponent(new ComponentName("com.suchagit.android2cloud", "com.suchagit.android2cloud.HttpService"));
-        		intent.setAction("PaymentNotification");
+        		intent.setAction("com.suchagit.android2cloud.PaymentNotification");
         		intent.putExtra("com.suchagit.android2cloud.result_receiver", mReceiver);
         		intent.putExtra("com.suchagit.android2cloud.host", account.getHost());
         		intent.putExtra("com.suchagit.android2cloud.oauth_token", account.getToken());

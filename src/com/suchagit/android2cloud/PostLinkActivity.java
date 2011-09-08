@@ -326,7 +326,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 	private void sendLink() {
 		Intent intent = new Intent();
 		intent.setComponent(new ComponentName("com.suchagit.android2cloud", "com.suchagit.android2cloud.HttpService"));
-		intent.setAction("AddLink");
+		intent.setAction("com.suchagit.android2cloud.AddLink");
 		intent.putExtra("com.suchagit.android2cloud.result_receiver", mReceiver);
 		intent.putExtra("com.suchagit.android2cloud.host", account.getHost());
 		intent.putExtra("com.suchagit.android2cloud.oauth_token", account.getToken());

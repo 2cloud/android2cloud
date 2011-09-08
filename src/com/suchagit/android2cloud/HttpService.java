@@ -37,16 +37,16 @@ public class HttpService extends IntentService {
 		HttpRequestBase request = null;
 		Bundle b = new Bundle();
 		try {
-			if(requestType.equals("AddLink")) {
+			if(requestType.equals("com.suchagit.android2cloud.AddLink")) {
 				String link = intent.getStringExtra("com.suchagit.android2cloud.link");
 				String receiver = intent.getStringExtra("com.suchagit.android2cloud.receiver");
 				String sender = intent.getStringExtra("com.suchagit.android2cloud.sender");
 				request = new AddLinkRequest(host, receiver, sender, link);
-			} else if (requestType.equals("PaymentNotification")) {
+			} else if (requestType.equals("com.suchagit.android2cloud.PaymentNotification")) {
 				String itemId = intent.getStringExtra("com.suchagit.android2cloud.item_id");
 				String orderNumber = intent.getStringExtra("com.suchagit.android2cloud.order_number");
 				request = new PaymentNotificationRequest(host, orderNumber, itemId);
-			} else if (requestType.equals("CheckTime")) {
+			} else if (requestType.equals("com.suchagit.android2cloud.CheckTime")) {
 				request = new CheckTimeRequest(host);
 			}
 			String response = client.exec(request);

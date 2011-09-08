@@ -109,7 +109,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		} catch(DeprecatedHostException e) {
 			popup = true;
 			render();
-			account.delete(settings);
+			account.delete(accounts_preferences);
 			DialogFragment deprecatedHostFragment = DeprecatedHostExceptionDialogFragment.newInstance();
 			deprecatedHostFragment.show(getSupportFragmentManager(), "dialog");
 		}

@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +33,7 @@ import com.suchagit.android2cloud.errors.OAuthMessageSignerExceptionDialogFragme
 import com.suchagit.android2cloud.errors.OAuthNotAuthorizedExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.OAuthWebviewNullIntentDialogFragment;
 import com.suchagit.android2cloud.util.CheckTimeResponse;
+import com.suchagit.android2cloud.util.HttpClient;
 import com.suchagit.android2cloud.util.OAuth;
 import com.suchagit.android2cloud.util.OAuthAccount;
 
@@ -100,7 +102,8 @@ public class OAuthActivity extends FragmentActivity implements CheckTimeResponse
 					error_data.putString("account", account_input.getText().toString());
 					error_data.putString("request_url", requestUrl);
 					error_data.putString("response_body", e.getResponseBody());
-					getServerTime(error_data);
+					getServerTime();
+					mReceiver.setPassThrough(error_data);
 	        	    //getServerTime() is asynchronous, so we pass the error information to it so it can display the error if the time is right
 					//DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(error_data);
 	        	    //errorFragment.show(getSupportFragmentManager(), "dialog");
@@ -111,6 +114,7 @@ public class OAuthActivity extends FragmentActivity implements CheckTimeResponse
 	
 	@Override
 	protected void onResume() {
+		super.onResume();
 		mReceiver = new CheckTimeResponse(new Handler());
 		mReceiver.setReceiver(this);
 	}
@@ -192,13 +196,12 @@ public class OAuthActivity extends FragmentActivity implements CheckTimeResponse
     	}
 	}
     
-    public void getServerTime(Bundle errorPassThrough) {
+    public void getServerTime() {
 		Intent intent = new Intent();
 		intent.setComponent(new ComponentName("com.suchagit.android2cloud", "com.suchagit.android2cloud.HttpService"));
 		intent.setAction("CheckTime");
 		intent.putExtra("result_receiver", mReceiver);
 		intent.putExtra("host", host_input.getText().toString());
-		intent.putExtra("error_pass_through", errorPassThrough); // the error will be displayed from onReceiveResult if the time is right
 		startService(intent);
     }
     
@@ -214,17 +217,19 @@ public class OAuthActivity extends FragmentActivity implements CheckTimeResponse
     	Bundle device = getDeviceTime();
     	long diff = device.getLong("currentTime") - serverTime;
     	long acceptableDiff = 1800000; // thirty minutes in milliseconds
-    	return (diff > acceptableDiff || diff < 0);
+    	Log.d("OAuthActivity", device.getLong("currentTime") + "");
+    	return (diff < acceptableDiff && diff > 0);
     }
 
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
-		if(!correctTime(resultData.getLong("currentTime"))) {
+		if(resultCode == HttpClient.STATUS_COMPLETE && resultData.getInt("response_code") == 200 && !correctTime(resultData.getLong("currentTime"))) {
 			DialogFragment errorFragment = IncorrectTimeDialogFragment.newInstance(getDeviceTime());
     	    errorFragment.show(getSupportFragmentManager(), "dialog");
 		} else {
 			// display the OAuthCommunicationError we swallowed
-			DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(resultData.getBundle("error_pass_through"));
+			Bundle error_data = mReceiver.getPassThrough();
+			DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(error_data);
     	    errorFragment.show(getSupportFragmentManager(), "dialog");
 		}
 	}

@@ -10,13 +10,22 @@ import android.util.Log;
 
 public class CheckTimeResponse extends ResultReceiver {
     private Receiver mReceiver;
-
+    private Bundle passThrough;
+    
     public CheckTimeResponse(Handler handler) {
         super(handler);
     }
 
     public void setReceiver(Receiver receiver) {
         mReceiver = receiver;
+    }
+    
+    public void setPassThrough(Bundle error) {
+    	passThrough = error;
+    }
+    
+    public Bundle getPassThrough() {
+    	return passThrough;
     }
 
     public interface Receiver {
@@ -31,13 +40,13 @@ public class CheckTimeResponse extends ResultReceiver {
         		try {
 					JSONObject json = new JSONObject(resultData.getString("raw_result"));
 					newData.putInt("response_code", json.getInt("code"));
-					newData.putString("link", json.getString("link"));
+					newData.putString("timestamp", json.getString("timestamp"));
 					newData.putString("raw_result", resultData.getString("raw_result"));
 				} catch (JSONException e) {
 					newData.putInt("response_code", 500);
 					newData.putString("type", "client_error");
-					Log.d("AddLinkResponse", resultData.getString("raw_result"));
-					Log.d("AddLinkResponse", e.getMessage());
+					Log.d("CheckTimeResponse", resultData.getString("raw_result"));
+					Log.d("CheckTimeResponse", e.getMessage());
 				}
         	} else if(resultCode == HttpClient.STATUS_ERROR) {
         		newData = resultData;

@@ -11,6 +11,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.widget.Toast;
 
 
 public class Preferences extends PreferenceActivity implements OnPreferenceChangeListener {
@@ -40,7 +41,8 @@ public class Preferences extends PreferenceActivity implements OnPreferenceChang
 				SharedPreferences accounts = getSharedPreferences("android2cloud-accounts", 0);
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 				OAuthAccount account = new OAuthAccount(prefs.getString("account", ""), accounts);
-				account.delete(prefs);
+				account.delete(accounts);
+				Toast.makeText(Preferences.this, "Deleted account: "+account.getAccount(), Toast.LENGTH_LONG).show();
 				return true;
 			}
 		});

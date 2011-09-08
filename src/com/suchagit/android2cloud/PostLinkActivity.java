@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.suchagit.android2cloud.errors.DefaultErrorDialogFragment;
 import com.suchagit.android2cloud.errors.DeprecatedHostExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.HttpClientErrorDialogFragment;
+import com.suchagit.android2cloud.errors.IllegalArgumentExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.IllegalStateExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.IntentWithoutLinkDialogFragment;
 import com.suchagit.android2cloud.errors.NoAccountSelectedDialogFragment;
@@ -83,7 +84,8 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
+    	settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		//check to make sure they have an account
 		popup = false;
 		int accountStatus = checkAccount();
@@ -225,6 +227,14 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 					error_data.putString("stacktrace", resultData.getString("stacktrace"));
 					DialogFragment illegalStateFragment = IllegalStateExceptionDialogFragment.newInstance(error_data);
 					illegalStateFragment.show(getSupportFragmentManager(), "dialog");
+				} else if(resultData.getString("type").equals("illegal_argument_exception_error")) {
+					Bundle error_data = new Bundle();
+					error_data.putString("host", account.getHost());
+					error_data.putString("request_type", resultData.getString("request_type"));
+					error_data.putString("request_host", resultData.getString("host"));
+					error_data.putString("stacktrace", resultData.getString("stacktrace"));
+					DialogFragment illegalArgFragment = IllegalArgumentExceptionDialogFragment.newInstance(error_data);
+					illegalArgFragment.show(getSupportFragmentManager(), "dialog");
 				}
 			} else {
         	    DialogFragment errorFragment = DefaultErrorDialogFragment.newInstance();
@@ -348,6 +358,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		domain = domain.replace("https://", "");
 		domain = domain.replace("/", "");
 		if(domain.equals("android2cloud.appspot.com")) {
+			account.delete(accounts_preferences);
 			throw new DeprecatedHostException(domain);
 		}
 	}

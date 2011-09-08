@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import com.suchagit.android2cloud.util.AddLinkRequest;
+import com.suchagit.android2cloud.util.CheckTimeRequest;
 import com.suchagit.android2cloud.util.HttpClient;
 import com.suchagit.android2cloud.util.PaymentNotificationRequest;
 
@@ -45,6 +46,8 @@ public class HttpService extends IntentService {
 				String itemId = intent.getStringExtra("item_id");
 				String orderNumber = intent.getStringExtra("order_number");
 				request = new PaymentNotificationRequest(host, orderNumber, itemId);
+			} else if (requestType.equals("CheckTime")) {
+				request = new CheckTimeRequest(host);
 			}
 			String response = client.exec(request);
 			b.putString("raw_result", response);
@@ -56,6 +59,17 @@ public class HttpService extends IntentService {
 		} catch (IllegalStateException e) {
 			b.putInt("response_code", 600);
 			b.putString("type", "illegal_state_exception_error");
+			b.putString("request_type", requestType);
+			if(request != null)
+				b.putString("host", request.getURI().getHost());
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			b.putString("stacktrace", sw.toString());
+			result.send(HttpClient.STATUS_ERROR, b);
+		} catch (IllegalArgumentException e) {
+			b.putInt("response_code", 600);
+			b.putString("type", "illegal_argument_exception_error");
 			b.putString("request_type", requestType);
 			if(request != null)
 				b.putString("host", request.getURI().getHost());

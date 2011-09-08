@@ -55,4 +55,5 @@
 	<string name="deprecated_host_error">The host you are using is no longer available. The account using it has been removed. Please add a new account.</string>
 	<string name="incorrect_time_error">It appears as though your device\'s time is set incorrectly. Please check your timezone, date, and time.</string>
 	<string name="incorrect_time_error_time_button">Open Date &amp; Time Settings</string>
+	<string name="illegal_argument_exception_error">There was a problem contacting the host. We apologise for the issue, and are working on finding a fix. Please report this issue using the button below to assist us in fixing this bug.</string>
 </resources>

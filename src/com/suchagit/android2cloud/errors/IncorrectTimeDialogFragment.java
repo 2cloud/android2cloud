@@ -42,8 +42,7 @@ public class IncorrectTimeDialogFragment extends DialogFragment {
             .setNegativeButton(noButton,
                 new DialogInterface.OnClickListener() {
     			public void onClick(DialogInterface dialog, int id) {
-	    			Intent i = new Intent(Intent.ACTION_MAIN);
-	    			i.setClassName("com.android.phone", "com.android.phone.NetworkSetting");
+	    			Intent i = new Intent(android.provider.Settings.ACTION_DATE_SETTINGS);
 	    			getActivity().startActivity(i);
     			}
     		})

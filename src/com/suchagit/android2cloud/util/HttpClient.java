@@ -20,8 +20,8 @@ public class HttpClient extends DefaultHttpClient {
 	public static final int STATUS_RUNNING = 0;
 	public static final int STATUS_ERROR = -1;
 	
-	protected static final String CONSUMER_KEY = "www.2cloudproject.com";
-	protected static final String CONSUMER_SECRET = "kxB25XTmkIMA6lWfxgR3+Pk9";
+	protected static final String CONSUMER_KEY = "INSERT CONSUMER KEY";
+	protected static final String CONSUMER_SECRET = "INSERT CONSUMER SECRET";
 	
 	private String oauth_token;
 	private String oauth_secret;
@@ -54,12 +54,12 @@ public class HttpClient extends DefaultHttpClient {
 	
 	public HttpClient(String oauth_token, String oauth_secret) {
 		super();
-		if(!oauth_token.equals("error")) {
+		if(!"error".equals(oauth_token)) {
 			this.setOAuthToken(oauth_token);
 		} else {
 			//TODO: find some way of erroring
 		}
-		if(!oauth_secret.equals("error")) {
+		if(!"error".equals(oauth_secret)) {
 			this.setOAuthSecret(oauth_secret);
 		} else {
 			//TODO: find some way of erroring

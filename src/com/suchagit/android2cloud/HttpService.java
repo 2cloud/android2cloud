@@ -27,24 +27,24 @@ public class HttpService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		if(client == null) {
-			String oauth_token = intent.getStringExtra("oauth_token");
-			String oauth_secret = intent.getStringExtra("oauth_secret");
+			String oauth_token = intent.getStringExtra("com.suchagit.android2cloud.oauth_token");
+			String oauth_secret = intent.getStringExtra("com.suchagit.android2cloud.oauth_secret");
 			client = new HttpClient(oauth_token, oauth_secret);
 		}
 		String requestType = intent.getAction();
-		String host = intent.getStringExtra("host");
-		final ResultReceiver result = intent.getParcelableExtra("result_receiver");
+		String host = intent.getStringExtra("com.suchagit.android2cloud.host");
+		final ResultReceiver result = intent.getParcelableExtra("com.suchagit.android2cloud.result_receiver");
 		HttpRequestBase request = null;
 		Bundle b = new Bundle();
 		try {
 			if(requestType.equals("AddLink")) {
-				String link = intent.getStringExtra("link");
-				String receiver = intent.getStringExtra("receiver");
-				String sender = intent.getStringExtra("sender");
+				String link = intent.getStringExtra("com.suchagit.android2cloud.link");
+				String receiver = intent.getStringExtra("com.suchagit.android2cloud.receiver");
+				String sender = intent.getStringExtra("com.suchagit.android2cloud.sender");
 				request = new AddLinkRequest(host, receiver, sender, link);
 			} else if (requestType.equals("PaymentNotification")) {
-				String itemId = intent.getStringExtra("item_id");
-				String orderNumber = intent.getStringExtra("order_number");
+				String itemId = intent.getStringExtra("com.suchagit.android2cloud.item_id");
+				String orderNumber = intent.getStringExtra("com.suchagit.android2cloud.order_number");
 				request = new PaymentNotificationRequest(host, orderNumber, itemId);
 			} else if (requestType.equals("CheckTime")) {
 				request = new CheckTimeRequest(host);

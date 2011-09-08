@@ -23,7 +23,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.errors.DefaultErrorDialogFragment;
 import com.suchagit.android2cloud.errors.DeprecatedHostExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.HttpClientErrorDialogFragment;
@@ -353,6 +352,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private class TooManyLinksException extends Exception {
 		CharSequence[] matches;
 		
@@ -366,6 +366,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 	}
 	
 	
+	@SuppressWarnings("serial")
 	public class DeprecatedHostException extends Exception {
 		String domain;
 		
@@ -378,6 +379,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private class NoLinkFoundException extends Exception {
 		// just defining the class
 		// no real data needed

@@ -2,7 +2,6 @@
 
 package com.suchagit.android2cloud;
 
-import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.BillingService.RequestPurchase;
 import com.suchagit.android2cloud.Consts.PurchaseState;
 import com.suchagit.android2cloud.Consts.ResponseCode;
@@ -31,7 +30,7 @@ public abstract class PurchaseObserver {
     private final Handler mHandler;
     private Method mStartIntentSender;
     private Object[] mStartIntentSenderArgs = new Object[5];
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
 	private static final Class[] START_INTENT_SENDER_SIG = new Class[] {
         IntentSender.class, Intent.class, int.class, int.class, int.class
     };

@@ -1,12 +1,13 @@
 package com.suchagit.android2cloud.errors;
 
-import com.suchagit.android2cloud.PostLinkActivity;
-import com.secondbit.debug2cloud.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+
+import com.suchagit.android2cloud.PostLinkActivity;
+import com.suchagit.android2cloud.R;
 
 public class SelectLinkDialogFragment extends DialogFragment {
 	

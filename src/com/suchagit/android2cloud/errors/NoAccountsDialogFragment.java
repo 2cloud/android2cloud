@@ -1,7 +1,8 @@
 package com.suchagit.android2cloud.errors;
 
 import com.suchagit.android2cloud.OAuthActivity;
-import com.secondbit.debug2cloud.R;
+import com.suchagit.android2cloud.R;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;

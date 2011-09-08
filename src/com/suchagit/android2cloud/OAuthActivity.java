@@ -24,7 +24,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.errors.OAuthActivityNullUriDialogFragment;
 import com.suchagit.android2cloud.errors.OAuthCommunicationExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.OAuthExpectationFailedExceptionDialogFragment;

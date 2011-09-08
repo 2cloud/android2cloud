@@ -18,7 +18,6 @@ package com.suchagit.android2cloud;
 
 import com.android.vending.billing.IMarketBillingService;
 
-import com.secondbit.debug2cloud.R;
 import com.suchagit.android2cloud.Consts.PurchaseState;
 import com.suchagit.android2cloud.Consts.ResponseCode;
 import com.suchagit.android2cloud.util.Security;

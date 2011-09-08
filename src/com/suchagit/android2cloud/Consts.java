@@ -16,8 +16,6 @@
 
 package com.suchagit.android2cloud;
 
-import com.secondbit.debug2cloud.R;
-
 /**
  * This class holds global constants that are used throughout the application
  * to support in-app billing.

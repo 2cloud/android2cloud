@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import com.secondbit.debug2cloud.R;
 
 public class ErrorDialogBuilder extends AlertDialog.Builder {
 	private Activity activity;

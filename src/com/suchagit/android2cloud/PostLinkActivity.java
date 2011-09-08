@@ -302,7 +302,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
         ArrayList<String> matches = new ArrayList<String>();
         while(matcher.find()){
         	matches.add(matcher.group());
-			Log.d("PostLinkActivity", matcher.group());
+			Log.d("PostLinkActivity", "Match: "+matcher.group());
         }
         final CharSequence[] matches_cs = matches.toArray(new CharSequence[matches.size()]);
         if(matches.size() > 1) {

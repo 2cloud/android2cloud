@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.suchagit.android2cloud.errors.IncorrectTimeDialogFragment;
 import com.suchagit.android2cloud.errors.OAuthActivityNullUriDialogFragment;
 import com.suchagit.android2cloud.errors.OAuthCommunicationExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.OAuthExpectationFailedExceptionDialogFragment;
@@ -219,10 +220,8 @@ public class OAuthActivity extends FragmentActivity implements CheckTimeResponse
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		if(!correctTime(resultData.getLong("currentTime"))) {
-			Bundle device = getDeviceTime();
-			String timezone = device.getString("timezone");
-			String friendlyTime = device.getString("friendlyTime");
-			// TODO Show a time error
+			DialogFragment errorFragment = IncorrectTimeDialogFragment.newInstance(getDeviceTime());
+    	    errorFragment.show(getSupportFragmentManager(), "dialog");
 		} else {
 			// display the OAuthCommunicationError we swallowed
 			DialogFragment errorFragment = OAuthCommunicationExceptionDialogFragment.newInstance(resultData.getBundle("error_pass_through"));

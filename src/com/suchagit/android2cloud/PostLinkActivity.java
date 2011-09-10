@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.suchagit.android2cloud.errors.CorruptedAccountDialogFragment;
 import com.suchagit.android2cloud.errors.DefaultErrorDialogFragment;
 import com.suchagit.android2cloud.errors.DeprecatedHostExceptionDialogFragment;
 import com.suchagit.android2cloud.errors.HttpClientErrorDialogFragment;
@@ -112,6 +113,12 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 			account.delete(accounts_preferences);
 			DialogFragment deprecatedHostFragment = DeprecatedHostExceptionDialogFragment.newInstance();
 			deprecatedHostFragment.show(getSupportFragmentManager(), "dialog");
+		} catch(CorruptedAccountException e) {
+			popup = true;
+			render();
+			account.delete(accounts_preferences);
+			DialogFragment corruptedAccountFragment = CorruptedAccountDialogFragment.newInstance();
+			corruptedAccountFragment.show(getSupportFragmentManager(), "dialog");
 		}
 		
 		// pull the URL from the intent
@@ -350,7 +357,7 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
         }
 	}
 	
-	public void checkHost(String host) throws DeprecatedHostException {
+	public void checkHost(String host) throws DeprecatedHostException, CorruptedAccountException {
 		if(host == null) {
 			host = "";
 		}
@@ -360,6 +367,9 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 		if(domain.equals("android2cloud.appspot.com")) {
 			account.delete(accounts_preferences);
 			throw new DeprecatedHostException(domain);
+		} else if(domain.equals("error")) {
+			account.delete(accounts_preferences);
+			throw new CorruptedAccountException();
 		}
 	}
 	
@@ -392,6 +402,12 @@ public class PostLinkActivity extends FragmentActivity implements AddLinkRespons
 	
 	@SuppressWarnings("serial")
 	private class NoLinkFoundException extends Exception {
+		// just defining the class
+		// no real data needed
+	}
+	
+	@SuppressWarnings("serial")
+	private class CorruptedAccountException extends Exception {
 		// just defining the class
 		// no real data needed
 	}
